@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LevelÜ — Creá tu perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0c0c0c; --surface: #161616; --surface2: #202020; --surface3: #2a2a2a;
+  --border: #272727; --border2: #383838;
+  --lime: #c8f54a; --lime-dim: rgba(200,245,74,0.07); --lime-text: #0c0c0c;
+  --white: #f0f0eb; --muted: #787873; --muted2: #3a3a38;
+  --red: #ff4d4d; --amber: #f59e0b; --green: #4ade80; --purple: #a78bfa; --blue: #60a5fa;
+}
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--white); display: flex; flex-direction: column; }
+
+/* ── NAV ── */
+nav {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0.9rem 2.5rem; display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.nav-logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: -0.04em; }
+.nav-logo span { color: var(--lime); }
+.nav-sub { font-size: 11px; color: var(--muted); }
+
+/* ── MAIN LAYOUT ── */
+.main { display: grid; grid-template-columns: 340px 1fr; flex: 1; overflow: hidden; }
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden; padding: 2rem 1.75rem;
+}
+.left-brand { margin-bottom: 2.5rem; }
+.left-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 0.75rem; }
+.left-title span { color: var(--lime); }
+.left-sub { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+/* Steps list */
+.steps-list { display: flex; flex-direction: column; gap: 0; flex: 1; }
+.step-item { display: flex; gap: 14px; align-items: flex-start; padding: 0.85rem 0; position: relative; }
+.step-item:not(:last-child)::after {
+  content: ''; position: absolute; left: 15px; top: 44px;
+  width: 1px; height: calc(100% - 12px); background: var(--border2);
+}
+.step-dot {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; border: 1.5px solid var(--border2);
+  color: var(--muted); background: var(--surface); transition: all 0.3s; z-index: 1;
+}
+.step-dot.active { background: var(--lime); color: var(--lime-text); border-color: var(--lime); }
+.step-dot.done { background: var(--lime-dim); color: var(--lime); border-color: rgba(200,245,74,0.3); }
+.step-dot.done::after { content: '✓'; }
+.step-info { padding-top: 4px; }
+.step-name { font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.3s; }
+.step-name.active { color: var(--white); }
+.step-name.done { color: var(--lime); }
+.step-desc { font-size: 11px; color: var(--muted2); margin-top: 2px; }
+
+/* Profile preview */
+.profile-preview {
+  margin-top: auto; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1rem 1.1rem; display: none;
+}
+.profile-preview.visible { display: block; }
+.pp-label { font-size: 10px; color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.pp-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 3px; }
+.pp-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.pp-tag { font-size: 10px; background: var(--surface3); border-radius: 99px; padding: 3px 9px; color: var(--muted); }
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  overflow-y: auto; display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+
+.wizard-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 560px;
+  animation: slideIn 0.3s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.wiz-step-label { font-size: 11px; color: var(--lime); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; }
+.wiz-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 0.5rem; line-height: 1.15; }
+.wiz-sub { font-size: 14px; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+
+/* Progress bar */
+.prog-bar { height: 3px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 2rem; }
+.prog-fill { height: 100%; background: var(--lime); border-radius: 99px; transition: width 0.4s ease; }
+
+/* Form elements */
+.form-row { margin-bottom: 1.1rem; }
+.form-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: block; letter-spacing: 0.02em; }
+.form-input {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 11px 14px; color: var(--white);
+  font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s;
+}
+.form-input:focus { border-color: rgba(200,245,74,0.4); }
+.form-input::placeholder { color: var(--muted); }
+.form-select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 11px 14px; color: var(--white);
+  font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; cursor: pointer;
+}
+.form-select:focus { border-color: rgba(200,245,74,0.4); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Option cards */
+.opt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.opt-card {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 1rem; cursor: pointer;
+  transition: all 0.15s; text-align: center;
+}
+.opt-card:hover { border-color: var(--border2); }
+.opt-card.selected { border-color: var(--lime); background: var(--lime-dim); }
+.opt-card-ico { font-size: 22px; margin-bottom: 8px; }
+.opt-card-lbl { font-size: 13px; font-weight: 500; color: var(--white); }
+.opt-card-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* Skill sliders */
+.skill-item { margin-bottom: 1.25rem; }
+.skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.skill-name { font-size: 13px; color: var(--white); }
+.skill-val { font-size: 12px; font-weight: 600; }
+.skill-track { position: relative; }
+input[type=range] {
+  width: 100%; -webkit-appearance: none; height: 5px;
+  background: var(--surface3); border-radius: 99px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--lime); cursor: pointer; border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--lime);
+}
+.skill-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted2); margin-top: 4px; }
+
+/* Tag chips */
+.tag-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-chip {
+  padding: 7px 14px; border-radius: 99px; font-size: 12px; font-weight: 500;
+  border: 1.5px solid var(--border2); background: var(--surface2);
+  color: var(--muted); cursor: pointer; transition: all 0.15s;
+}
+.tag-chip.selected { border-color: var(--lime); background: var(--lime-dim); color: var(--lime); }
+.tag-chip:hover { border-color: var(--border2); color: var(--white); }
+
+/* Actions */
+.wiz-actions { display: flex; gap: 10px; margin-top: 2rem; }
+.btn-back {
+  flex: 1; background: transparent; border: 1px solid var(--border2);
+  border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 500;
+  color: var(--muted); font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s;
+}
+.btn-back:hover { border-color: var(--white); color: var(--white); }
+.btn-next {
+  flex: 2; background: var(--lime); border: none; border-radius: 12px;
+  padding: 12px; font-size: 14px; font-weight: 700; color: var(--lime-text);
+  font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s;
+}
+.btn-next:hover { box-shadow: 0 6px 20px rgba(200,245,74,0.3); }
+.btn-next:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.btn-full { width: 100%; }
+
+/* ── CHAT VIEW ── */
+.chat-view { display: none; flex: 1; overflow: hidden; }
+.chat-view.active { display: grid; grid-template-columns: 300px 1fr; }
+
+.chat-sidebar {
+  background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.chat-sidebar-top { padding: 1.25rem; border-bottom: 1px solid var(--border); }
+.profile-card { background: var(--surface2); border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 1rem; }
+.pc-avatar {
+  width: 40px; height: 40px; border-radius: 50%; background: rgba(200,245,74,0.12);
+  border: 1.5px solid rgba(200,245,74,0.3); display: flex; align-items: center;
+  justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 14px; color: var(--lime); margin-bottom: 8px;
+}
+.pc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+.pc-meta { font-size: 11px; color: var(--muted); }
+.pc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.pc-tag { font-size: 10px; padding: 2px 8px; border-radius: 99px; background: var(--surface3); color: var(--muted); }
+
+.year-area { padding: 0 1.25rem 1rem; }
+.year-lbl { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+
+.sugg-area { padding: 0 1.25rem; flex: 1; overflow-y: auto; }
+.sugg-lbl { font-size: 10px; color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.sugg-btn {
+  display: block; width: 100%; text-align: left; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px;
+  font-size: 12px; color: var(--muted); font-family: 'DM Sans', sans-serif;
+  margin-bottom: 6px; cursor: pointer; line-height: 1.5; transition: all 0.15s;
+}
+.sugg-btn:hover { border-color: var(--lime); color: var(--white); }
+
+.chat-sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--border); }
+.edit-profile-btn {
+  width: 100%; background: transparent; border: 1px solid var(--border2);
+  border-radius: 10px; padding: 8px; font-size: 12px; color: var(--muted);
+  font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s;
+}
+.edit-profile-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+.chat-main { display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+.chat-topbar {
+  padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface);
+}
+.chat-topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; }
+.chat-topbar-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.web-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+  border-radius: 99px; padding: 5px 12px; font-size: 11px; color: var(--green); font-weight: 600;
+}
+.web-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:0.4}50%{opacity:1} }
+
+.ctx-bar {
+  margin: 0.75rem 1.5rem 0; padding: 8px 12px;
+  background: var(--lime-dim); border: 1px solid rgba(200,245,74,0.12);
+  border-radius: 10px; font-size: 11px; color: var(--muted); flex-shrink: 0;
+}
+.ctx-bar b { color: var(--lime); }
+
+.messages { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 12px; }
+.messages::-webkit-scrollbar { width: 3px; }
+.messages::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+
+.bubble { max-width: 72%; padding: 11px 15px; border-radius: 14px; font-size: 14px; line-height: 1.65; white-space: pre-wrap; }
+.bubble.ai { align-self: flex-start; background: var(--surface2); color: var(--white); border-bottom-left-radius: 4px; }
+.bubble.user { align-self: flex-end; background: var(--lime); color: var(--lime-text); border-bottom-right-radius: 4px; font-weight: 500; }
+.bubble.searching {
+  align-self: flex-start; background: rgba(74,222,128,0.07);
+  border: 1px solid rgba(74,222,128,0.18); color: var(--green);
+  font-size: 12px; display: flex; align-items: center; gap: 8px; border-bottom-left-radius: 4px;
+}
+.bubble.typing { align-self: flex-start; background: var(--surface2); padding: 12px 16px; border-bottom-left-radius: 4px; }
+.typing-dots { display: flex; gap: 5px; }
+.typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
+.typing-dot:nth-child(2){animation-delay:0.2s;}.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+.source-wrap { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.source-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--surface3); border-radius: 99px; padding: 3px 9px; font-size: 10px; color: var(--muted); }
+
+.input-area { padding: 1rem 1.5rem; border-top: 1px solid var(--border); flex-shrink: 0; display: flex; gap: 10px; background: var(--surface); }
+.chat-input {
+  flex: 1; background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 11px 16px; color: var(--white);
+  font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s;
+}
+.chat-input:focus { border-color: rgba(200,245,74,0.4); }
+.chat-input::placeholder { color: var(--muted); }
+.send-btn {
+  width: 44px; height: 44px; border-radius: 12px; background: var(--lime);
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<nav>
+  <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="14" fill="#161616"/><rect x="28" y="12" width="15" height="15" rx="3" fill="#c8f54a"/><rect x="57" y="12" width="15" height="15" rx="3" fill="#c8f54a"/><path d="M26 34L26 63Q26 82 50 82Q74 82 74 63L74 34L59 34L59 63Q59 70 50 70Q41 70 41 63L41 34Z" fill="#f0f0eb"/></svg>
+  <div>
+    <div class="nav-logo">Level<span>Ü</span></div>
+    <div class="nav-sub">Plataforma de empleabilidad · UCASAL</div>
+  </div>
+</nav>
+
+<!-- ONBOARDING -->
+<div class="main" id="onboarding-view">
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="left-brand">
+      <div class="left-title">Creá tu perfil<br/>de <span>carrera</span></div>
+      <div class="left-sub">La IA necesita conocerte para darte respuestas útiles y personalizadas, no genéricas.</div>
+    </div>
+    <div class="steps-list" id="steps-list"></div>
+    <div class="profile-preview" id="profile-preview">
+      <div class="pp-label">Vista previa de tu perfil</div>
+      <div class="pp-name" id="pp-name">—</div>
+      <div style="font-size:12px;color:var(--muted)" id="pp-meta">—</div>
+      <div class="pp-tags" id="pp-tags"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="wizard-card" id="wizard-card"></div>
+  </div>
+</div>
+
+<!-- CHAT APP -->
+<div class="chat-view" id="chat-view">
+  <div class="chat-sidebar">
+    <div class="chat-sidebar-top">
+      <div class="profile-card">
+        <div class="pc-avatar" id="chat-avatar"></div>
+        <div class="pc-name" id="chat-name"></div>
+        <div class="pc-meta" id="chat-meta"></div>
+        <div class="pc-tags" id="chat-tags"></div>
+      </div>
+    </div>
+    <div class="year-area">
+      <div class="year-lbl">Año de cursado</div>
+      <select id="year-sel" style="width:100%;font-size:13px;font-family:'DM Sans',sans-serif;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--white);padding:8px 12px;outline:none" onchange="onYearChange()">
+        <option value="1">1° año</option>
+        <option value="2">2° año</option>
+        <option value="3">3° año</option>
+        <option value="4">4° año</option>
+        <option value="5">5° año</option>
+      </select>
+    </div>
+    <div class="sugg-area">
+      <div class="sugg-lbl">Preguntas sugeridas</div>
+      <div id="sugg-list"></div>
+    </div>
+    <div class="chat-sidebar-footer">
+      <button class="edit-profile-btn" onclick="resetOnboarding()">← Editar mi perfil</button>
+    </div>
+  </div>
+
+  <div class="chat-main">
+    <div class="chat-topbar">
+      <div>
+        <div class="chat-topbar-title" id="chat-topbar-title">Asistente de carrera</div>
+        <div class="chat-topbar-sub">Respuestas personalizadas según tu perfil · búsqueda web activa</div>
+      </div>
+      <div class="web-badge"><div class="web-dot"></div>Web search activo</div>
+    </div>
+    <div class="ctx-bar" id="ctx-bar"></div>
+    <div class="messages" id="msgs"></div>
+    <div class="input-area">
+      <input class="chat-input" id="chat-inp" placeholder="Preguntale algo al asistente..." onkeydown="if(event.key==='Enter'&&!loading)sendMsg()"/>
+      <button class="send-btn" id="send-btn" onclick="sendMsg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0c0c0c" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// WIZARD CONFIG
+// ═══════════════════════════════════════
+const STEPS = [
+  { id:'datos',       label:'Datos personales',      desc:'Nombre, mail y carrera' },
+  { id:'area',        label:'Área de interés',        desc:'¿En qué querés trabajar?' },
+  { id:'habilidades', label:'Mis habilidades',        desc:'Autoevaluación honesta' },
+  { id:'aspiraciones',label:'Aspiraciones',           desc:'A dónde querés llegar' },
+  { id:'resumen',     label:'Revisión y confirmación',desc:'Confirmá tu perfil' },
+];
+
+const CARRERAS = [
+  'Lic. en Administración','Lic. en Marketing','Contador Público',
+  'Ing. en Sistemas','Lic. en RRHH','Lic. en Turismo',
+  'Abogacía','Psicología','Arquitectura','Otra',
+];
+
+const AREAS = [
+  {ico:'📊',lbl:'Marketing y Comunicación',sub:'Digital, branding, contenidos'},
+  {ico:'💰',lbl:'Finanzas y Contabilidad',sub:'Análisis, auditoría, impuestos'},
+  {ico:'💻',lbl:'Tecnología y Sistemas',sub:'Dev, data, cloud, IA'},
+  {ico:'👥',lbl:'Recursos Humanos',sub:'Selección, cultura, bienestar'},
+  {ico:'📦',lbl:'Operaciones y Logística',sub:'Supply chain, procesos'},
+  {ico:'⚖️',lbl:'Legal y Consultoría',sub:'Derecho, asesoría, compliance'},
+  {ico:'🏗️',lbl:'Ingeniería y Construcción',sub:'Proyectos, infraestructura'},
+  {ico:'🎯',lbl:'Ventas y Comercial',sub:'B2B, B2C, desarrollo de negocios'},
+];
+
+const SKILLS = [
+  { id:'excel',    label:'Excel / hojas de cálculo',  desc:'Básico → Avanzado con macros' },
+  { id:'ingles',   label:'Inglés profesional',         desc:'Básico → Fluido / Avanzado' },
+  { id:'datos',    label:'Análisis de datos / BI',     desc:'Ninguno → Python/SQL/Power BI' },
+  { id:'digital',  label:'Herramientas digitales',     desc:'Básico → Suite completa' },
+  { id:'liderazgo',label:'Liderazgo y equipos',        desc:'Sin experiencia → Lideré equipos' },
+  { id:'comunic',  label:'Comunicación y presentación',desc:'Básico → Oratoria avanzada' },
+];
+
+const SKILL_LABELS = ['Ninguno','Básico','Intermedio','Avanzado','Experto'];
+
+const EMPRESAS_TIPOS = [
+  'Empresa grande / multinacional','PYME local','Startup / tech',
+  'Organismo público / Estado','Consultoría','Emprender mi propio proyecto','No lo tengo claro aún',
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let currentStep = 0;
+let profile = {
+  nombre:'', mail:'', carrera:'', año:4,
+  area:'', skills:{}, aspiracion:'', tipoEmpresa:'',
+  intereses:[],
+};
+let chatHistory = [], loading = false;
+const AP = ['#c8f54a','#60a5fa','#f472b6','#f59e0b','#4ade80'];
+
+// ═══════════════════════════════════════
+// RENDER STEPS SIDEBAR
+// ═══════════════════════════════════════
+function renderStepsSidebar() {
+  document.getElementById('steps-list').innerHTML = STEPS.map((s,i) => {
+    const state = i < currentStep ? 'done' : i === currentStep ? 'active' : '';
+    return `<div class="step-item">
+      <div class="step-dot ${state}">${state==='done'?'':i+1}</div>
+      <div class="step-info">
+        <div class="step-name ${state}">${s.label}</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Profile preview
+  if (currentStep >= 1 && profile.nombre) {
+    document.getElementById('profile-preview').classList.add('visible');
+    document.getElementById('pp-name').textContent = profile.nombre;
+    document.getElementById('pp-meta').textContent = [profile.carrera, profile.año ? `Año ${profile.año}` : ''].filter(Boolean).join(' · ');
+    const tags = [profile.area, profile.aspiracion].filter(Boolean);
+    document.getElementById('pp-tags').innerHTML = tags.map(t=>`<span class="pp-tag">${t}</span>`).join('');
+  }
+}
+
+// ═══════════════════════════════════════
+// STEP RENDERERS
+// ═══════════════════════════════════════
+function renderStep() {
+  renderStepsSidebar();
+  const card = document.getElementById('wizard-card');
+  const pct = Math.round((currentStep / (STEPS.length - 1)) * 100);
+  const s = STEPS[currentStep];
+
+  let inner = `
+    <div class="wiz-step-label">Paso ${currentStep+1} de ${STEPS.length} — ${s.label}</div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+
+  if (currentStep === 0) inner += renderStep0();
+  else if (currentStep === 1) inner += renderStep1();
+  else if (currentStep === 2) inner += renderStep2();
+  else if (currentStep === 3) inner += renderStep3();
+  else if (currentStep === 4) inner += renderStep4();
+
+  card.innerHTML = inner;
+  card.style.animation = 'none';
+  requestAnimationFrame(() => card.style.animation = 'slideIn 0.3s ease');
+}
+
+function renderStep0() {
+  return `
+    <div class="wiz-title">Hola, ¿cómo te llamás?</div>
+    <div class="wiz-sub">Empecemos con lo básico para personalizar tu experiencia en LevelÜ.</div>
+    <div class="grid-2">
+      <div class="form-row">
+        <label class="form-label">Nombre</label>
+        <input class="form-input" id="f-nombre" placeholder="ej: Valentina" value="${profile.nombre}" oninput="profile.nombre=this.value;updatePreview()"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Apellido</label>
+        <input class="form-input" id="f-apellido" placeholder="ej: Ríos" value="${profile.apellido||''}" oninput="profile.apellido=this.value"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Mail personal</label>
+      <input class="form-input" id="f-mail" type="email" placeholder="tu@mail.com" value="${profile.mail}" oninput="profile.mail=this.value"/>
+    </div>
+    <div class="grid-2">
+      <div class="form-row">
+        <label class="form-label">Carrera</label>
+        <select class="form-select" id="f-carrera" onchange="profile.carrera=this.value;updatePreview()">
+          <option value="">Seleccioná...</option>
+          ${CARRERAS.map(c=>`<option value="${c}" ${profile.carrera===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Año de cursado</label>
+        <select class="form-select" id="f-año" onchange="profile.año=parseInt(this.value)">
+          ${[1,2,3,4,5].map(a=>`<option value="${a}" ${profile.año===a?'selected':''}>${a}° año</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="wiz-actions">
+      <button class="btn-next btn-full" onclick="nextStep()" id="btn-next0">Continuar →</button>
+    </div>`;
+}
+
+function renderStep1() {
+  return `
+    <div class="wiz-title">¿En qué área querés trabajar?</div>
+    <div class="wiz-sub">Elegí la que más se acerca a tu interés. Podés cambiarla después.</div>
+    <div class="opt-grid" id="area-grid">
+      ${AREAS.map(a=>`
+        <div class="opt-card ${profile.area===a.lbl?'selected':''}" onclick="selArea('${a.lbl}')">
+          <div class="opt-card-ico">${a.ico}</div>
+          <div class="opt-card-lbl">${a.lbl}</div>
+          <div class="opt-card-sub">${a.sub}</div>
+        </div>`).join('')}
+    </div>
+    <div class="wiz-actions">
+      <button class="btn-back" onclick="prevStep()">← Volver</button>
+      <button class="btn-next" onclick="nextStep()" ${!profile.area?'disabled':''} id="btn-next1">Continuar →</button>
+    </div>`;
+}
+
+function renderStep2() {
+  return `
+    <div class="wiz-title">¿Cómo evaluás tus habilidades?</div>
+    <div class="wiz-sub">Sé honesto/a — esto ayuda a la IA a identificar tus brechas reales y darte consejos útiles.</div>
+    ${SKILLS.map(sk => {
+      const val = profile.skills[sk.id] ?? 2;
+      const color = val<=1?'#ff4d4d':val<=2?'#f59e0b':val<=3?'#60a5fa':'#4ade80';
+      return `<div class="skill-item">
+        <div class="skill-header">
+          <span class="skill-name">${sk.label}</span>
+          <span class="skill-val" id="sv-${sk.id}" style="color:${color}">${SKILL_LABELS[val]}</span>
+        </div>
+        <div class="skill-track">
+          <input type="range" min="0" max="4" step="1" value="${val}" oninput="updateSkill('${sk.id}',parseInt(this.value))"/>
+          <div class="skill-labels"><span>Ninguno</span><span>Básico</span><span>Intermedio</span><span>Avanzado</span><span>Experto</span></div>
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="wiz-actions">
+      <button class="btn-back" onclick="prevStep()">← Volver</button>
+      <button class="btn-next" onclick="nextStep()">Continuar →</button>
+    </div>`;
+}
+
+function renderStep3() {
+  const tiposHtml = EMPRESAS_TIPOS.map(t=>`
+    <div class="opt-card ${profile.tipoEmpresa===t?'selected':''}" onclick="selTipo('${t}')" style="text-align:left;padding:0.8rem 1rem">
+      <div class="opt-card-lbl" style="font-size:12px">${t}</div>
+    </div>`).join('');
+
+  const interesesOpts = ['Liderazgo','Trabajo remoto','Impacto social','Innovación','Estabilidad','Startups','Multinacionales','NOA / Salta','Buenos Aires','Exterior'];
+  return `
+    <div class="wiz-title">¿A dónde querés llegar?</div>
+    <div class="wiz-sub">Contanos tus aspiraciones para que la IA pueda orientarte mejor.</div>
+    <div class="form-row">
+      <label class="form-label">Puesto o rol al que aspirás</label>
+      <input class="form-input" placeholder="ej: Gerente de Marketing, Analista de Datos, CTO..." value="${profile.aspiracion}" oninput="profile.aspiracion=this.value;updatePreview()"/>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Tipo de organización donde te ves trabajando</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">${tiposHtml}</div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">¿Qué valorás en un trabajo? (elegí los que apliquen)</label>
+      <div class="tag-grid" style="margin-top:8px">
+        ${interesesOpts.map(i=>`<span class="tag-chip ${profile.intereses?.includes(i)?'selected':''}" onclick="toggleInteres('${i}')">${i}</span>`).join('')}
+      </div>
+    </div>
+    <div class="wiz-actions">
+      <button class="btn-back" onclick="prevStep()">← Volver</button>
+      <button class="btn-next" onclick="nextStep()" ${!profile.aspiracion||!profile.tipoEmpresa?'disabled':''}>Continuar →</button>
+    </div>`;
+}
+
+function renderStep4() {
+  const skillSummary = Object.entries(profile.skills).map(([k,v])=>{
+    const s = SKILLS.find(sk=>sk.id===k);
+    const color = v<=1?'#ff4d4d':v<=2?'#f59e0b':v<=3?'#60a5fa':'#4ade80';
+    return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--muted)">${s?.label||k}</span><span style="font-weight:600;color:${color}">${SKILL_LABELS[v]}</span></div>`;
+  }).join('');
+
+  const brechas = Object.entries(profile.skills).filter(([,v])=>v<2).length;
+
+  return `
+    <div class="wiz-title">Tu perfil está listo</div>
+    <div class="wiz-sub">Revisá que todo esté bien antes de entrar a la app.</div>
+    <div style="background:var(--surface2);border-radius:14px;padding:1.25rem;margin-bottom:1.25rem">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <div style="width:44px;height:44px;border-radius:50%;background:rgba(200,245,74,0.12);border:1.5px solid rgba(200,245,74,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--lime);flex-shrink:0">${(profile.nombre||'?').charAt(0)}${(profile.apellido||'').charAt(0)}</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800">${profile.nombre} ${profile.apellido||''}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">${profile.carrera} · ${profile.año}° año · ${profile.mail}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem">
+        <div style="background:var(--surface3);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--muted2);margin-bottom:4px">ÁREA DE INTERÉS</div>
+          <div style="font-size:13px;font-weight:600">${profile.area}</div>
+        </div>
+        <div style="background:var(--surface3);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--muted2);margin-bottom:4px">ASPIRACIÓN</div>
+          <div style="font-size:13px;font-weight:600">${profile.aspiracion}</div>
+        </div>
+      </div>
+      <div>${skillSummary}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem">
+      ${[['Habilidades','todas las áreas evaluadas','#c8f54a'],[`${brechas} brechas`,brechas>2?'a trabajar':'detectadas',brechas>2?'#ff4d4d':'#f59e0b'],['IA lista','personalizada para vos','#4ade80']].map(([v,l,c])=>`
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 8px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:${c};line-height:1.2">${v}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px">${l}</div>
+        </div>`).join('')}
+    </div>
+    <div class="wiz-actions">
+      <button class="btn-back" onclick="prevStep()">← Editar</button>
+      <button class="btn-next" onclick="launchApp()">Entrar a LevelÜ →</button>
+    </div>`;
+}
+
+// ═══════════════════════════════════════
+// STEP ACTIONS
+// ═══════════════════════════════════════
+function nextStep() {
+  if (currentStep < STEPS.length - 1) { currentStep++; renderStep(); }
+}
+function prevStep() {
+  if (currentStep > 0) { currentStep--; renderStep(); }
+}
+function selArea(area) {
+  profile.area = area;
+  document.querySelectorAll('#area-grid .opt-card').forEach(c => c.classList.toggle('selected', c.querySelector('.opt-card-lbl').textContent === area));
+  document.getElementById('btn-next1')?.removeAttribute('disabled');
+}
+function selTipo(tipo) {
+  profile.tipoEmpresa = tipo;
+  renderStep();
+}
+function toggleInteres(i) {
+  profile.intereses = profile.intereses || [];
+  const idx = profile.intereses.indexOf(i);
+  if (idx>=0) profile.intereses.splice(idx,1); else profile.intereses.push(i);
+  renderStep();
+}
+function updateSkill(id, val) {
+  profile.skills[id] = val;
+  const colors = ['#ff4d4d','#f59e0b','#60a5fa','#60a5fa','#4ade80'];
+  const el = document.getElementById('sv-'+id);
+  if (el) { el.textContent = SKILL_LABELS[val]; el.style.color = colors[val]; }
+}
+function updatePreview() {
+  if (profile.nombre) {
+    document.getElementById('profile-preview').classList.add('visible');
+    document.getElementById('pp-name').textContent = profile.nombre + (profile.apellido?' '+profile.apellido:'');
+    document.getElementById('pp-meta').textContent = [profile.carrera, profile.año?`Año ${profile.año}`:''].filter(Boolean).join(' · ');
+  }
+}
+
+// ═══════════════════════════════════════
+// LAUNCH APP
+// ═══════════════════════════════════════
+
+const PERSONAS_SUGG = {
+  1:["¿Qué habilidades conviene arrancar desde primer año?","¿Cómo va a impactar la IA en mi carrera?","¿Qué certificaciones internacionales conviene hacer?"],
+  2:["¿Qué especializaciones tienen más salida en mi área?","¿Qué herramientas digitales debo aprender?","¿Conviene hacer cursos online mientras estudio?"],
+  3:["¿Qué piden las empresas para pasantías en mi carrera?","¿Qué nivel de inglés se exige realmente?","¿Cómo están cambiando los requisitos con la IA?"],
+  4:["¿Qué me falta para ser competitivo/a al recibirme?","¿Cuánto tiempo lleva cerrar mis brechas?","¿Cómo está el mercado en mi área ahora?"],
+  5:["¿Qué buscan las empresas del NOA en candidatos como yo?","¿Cómo preparar una entrevista para mi área?","¿Qué sueldo puedo esperar en Salta?"],
+};
+
+function buildSystemPrompt() {
+  const skillSummary = Object.entries(profile.skills).map(([k,v])=>{
+    const s = SKILLS.find(sk=>sk.id===k);
+    return `${s?.label||k}: ${SKILL_LABELS[v]}`;
+  }).join(', ');
+
+  const brechas = Object.entries(profile.skills).filter(([,v])=>v<2).map(([k])=>{
+    const s = SKILLS.find(sk=>sk.id===k); return s?.label||k;
+  }).join(', ');
+
+  const año = profile.año;
+  const foco = año<=2 ? "tendencias futuras a 3-5 años, habilidades tempranas, sin presión urgente" :
+               año===3 ? "pasantías, experiencia, habilidades complementarias" :
+               año===4 ? "cerrar brechas concretas, posicionamiento pre-egreso" :
+                         "búsqueda de empleo, entrevistas, salarios, posicionamiento";
+
+  return `Sos el asistente de LevelÜ, plataforma de empleabilidad de UCASAL (Salta, Argentina).
+
+PERFIL COMPLETO DEL ESTUDIANTE:
+- Nombre: ${profile.nombre} ${profile.apellido||''}
+- Carrera: ${profile.carrera}
+- Año de cursado: ${año}° año
+- Mail: ${profile.mail}
+- Área de interés: ${profile.area}
+- Puesto al que aspira: ${profile.aspiracion}
+- Tipo de organización preferida: ${profile.tipoEmpresa}
+- Lo que valora en un trabajo: ${(profile.intereses||[]).join(', ')||'No especificado'}
+- Autoevaluación de habilidades: ${skillSummary}
+- Brechas detectadas (habilidades bajas): ${brechas||'Ninguna crítica'}
+
+FOCO SEGÚN AÑO (${año}° año): ${foco}
+
+INSTRUCCIONES:
+- Dirigite SIEMPRE a ${profile.nombre} por su nombre. Usá "vos" (español rioplatense).
+- Usá web_search cuando el estudiante pregunte sobre tendencias, mercado laboral, empresas específicas o información que puede haber cambiado. Esto es clave para dar respuestas actualizadas.
+- Cruzá siempre sus brechas y perfil con la información que buscás en internet.
+- Priorizá soluciones de UCASAL (cursos, posgrados, extensión universitaria) antes que externas.
+- Respondé de forma concisa (máx 5-6 oraciones). Sé específico y accionable.
+- Nunca des respuestas genéricas — siempre personalizadas al perfil de ${profile.nombre}.`;
+}
+
+function launchApp() {
+  document.getElementById('onboarding-view').style.display = 'none';
+  document.getElementById('chat-view').classList.add('active');
+
+  const initials = (profile.nombre?.charAt(0)||'') + (profile.apellido?.charAt(0)||'');
+  document.getElementById('chat-avatar').textContent = initials;
+  document.getElementById('chat-name').textContent = `${profile.nombre} ${profile.apellido||''}`;
+  document.getElementById('chat-meta').textContent = `${profile.carrera} · ${profile.año}° año`;
+  const brechasCount = Object.values(profile.skills).filter(v=>v<2).length;
+  document.getElementById('chat-tags').innerHTML = [
+    profile.area, `${brechasCount} brecha${brechasCount!==1?'s':''}`, profile.aspiracion
+  ].filter(Boolean).map(t=>`<span class="pc-tag">${t}</span>`).join('');
+
+  document.getElementById('year-sel').value = profile.año;
+  document.getElementById('chat-topbar-title').textContent = `Asistente · ${profile.nombre}`;
+  document.getElementById('ctx-bar').innerHTML = `<b>Perfil activo:</b> ${profile.nombre} · ${profile.carrera} · ${profile.año}° año · Área: ${profile.area} · Aspiración: ${profile.aspiracion}`;
+
+  renderSuggestions();
+
+  const brechasTexto = Object.entries(profile.skills).filter(([,v])=>v<2).map(([k])=>SKILLS.find(s=>s.id===k)?.label||k).join(', ');
+  const welcome = `Hola ${profile.nombre} 👋 Ya tengo acceso a tu perfil completo.\n\n` +
+    `Sos de ${profile.carrera}, ${profile.año}° año, con interés en ${profile.area} y aspirás a ser ${profile.aspiracion}.\n\n` +
+    (brechasTexto ? `Detecté que tus brechas más importantes son: ${brechasTexto}. Voy a tenerlas en cuenta en cada respuesta.\n\n` : '') +
+    `Puedo buscar en internet información actualizada del mercado para darte consejos que realmente te sirvan ahora. ¿Por dónde empezamos?`;
+
+  addBubble('ai', welcome);
+}
+
+function renderSuggestions() {
+  const suggs = PERSONAS_SUGG[profile.año] || PERSONAS_SUGG[4];
+  const extra = [`¿Qué me falta para trabajar en ${profile.area}?`, `¿Cómo está el mercado para ${profile.aspiracion}?`];
+  const all = [...extra, ...suggs].slice(0, 6);
+  document.getElementById('sugg-list').innerHTML = all.map(s =>
+    `<button class="sugg-btn" onclick="useSugg(this)">${s}</button>`).join('');
+}
+
+function onYearChange() {
+  profile.año = parseInt(document.getElementById('year-sel').value);
+  renderSuggestions();
+  document.getElementById('ctx-bar').innerHTML = `<b>Perfil activo:</b> ${profile.nombre} · ${profile.carrera} · ${profile.año}° año · Área: ${profile.area} · Aspiración: ${profile.aspiracion}`;
+}
+
+function resetOnboarding() {
+  chatHistory = [];
+  currentStep = 0;
+  document.getElementById('chat-view').classList.remove('active');
+  document.getElementById('onboarding-view').style.display = 'grid';
+  document.getElementById('msgs').innerHTML = '';
+  renderStep();
+}
+
+// ═══════════════════════════════════════
+// CHAT
+// ═══════════════════════════════════════
+function addBubble(tipo, txt, sources) {
+  const box = document.getElementById('msgs');
+  const wrap = document.createElement('div');
+  const bbl = document.createElement('div');
+  bbl.className = 'bubble ' + tipo;
+  if (tipo === 'typing') {
+    bbl.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  } else {
+    bbl.textContent = txt;
+  }
+  wrap.appendChild(bbl);
+  if (sources?.length) {
+    const sw = document.createElement('div');
+    sw.className = 'source-wrap';
+    sources.forEach(s => {
+      const c = document.createElement('span');
+      c.className = 'source-chip';
+      c.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>${s}`;
+      sw.appendChild(c);
+    });
+    wrap.appendChild(sw);
+  }
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+}
+
+function useSugg(btn) {
+  document.getElementById('chat-inp').value = btn.textContent;
+  sendMsg();
+}
+
+async function sendMsg() {
+  if (loading) return;
+  const inp = document.getElementById('chat-inp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  loading = true;
+  document.getElementById('send-btn').disabled = true;
+
+  addBubble('user', txt);
+  chatHistory.push({ role: 'user', content: txt });
+
+  const searchEl = document.createElement('div');
+  searchEl.className = 'bubble searching';
+  searchEl.id = 'search-bbl';
+  searchEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Buscando información actualizada...`;
+  document.getElementById('msgs').appendChild(searchEl);
+  document.getElementById('msgs').scrollTop = 9999;
+
+  await new Promise(r => setTimeout(r, 500));
+  searchEl.remove();
+
+  const typingWrap = document.createElement('div');
+  const typingBbl = document.createElement('div');
+  typingBbl.className = 'bubble typing';
+  typingBbl.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  typingWrap.id = 'typing-wrap';
+  typingWrap.appendChild(typingBbl);
+  document.getElementById('msgs').appendChild(typingWrap);
+  document.getElementById('msgs').scrollTop = 9999;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        system: buildSystemPrompt(),
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: chatHistory
+      })
+    });
+
+    const data = await res.json();
+    document.getElementById('typing-wrap')?.remove();
+
+    let replyText = '';
+    const sources = [];
+
+    if (data.content) {
+      for (const block of data.content) {
+        if (block.type === 'text') replyText += block.text;
+        if (block.type === 'tool_use' && block.name === 'web_search') {
+          const q = block.input?.query || '';
+          if (q) sources.push(q.length > 40 ? q.substring(0,40)+'...' : q);
+        }
+      }
+    }
+
+    if (!replyText) replyText = 'No pude generar una respuesta. Intentá de nuevo.';
+    addBubble('ai', replyText.trim(), sources.length ? sources : null);
+    chatHistory.push({ role: 'assistant', content: data.content || [{ type:'text', text: replyText }] });
+
+  } catch(err) {
+    document.getElementById('typing-wrap')?.remove();
+    addBubble('ai', `Error de conexión: ${err.message}. Verificá tu conexión e intentá de nuevo.`);
+  }
+
+  loading = false;
+  document.getElementById('send-btn').disabled = false;
+  inp.focus();
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+SKILLS.forEach(s => profile.skills[s.id] = 2);
+renderStep();
+</script>
+</body>
+</html>
