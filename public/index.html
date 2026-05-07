@@ -467,7 +467,48 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 <script>
 // ═══════════════ DATA ═══════════════
 const AP=['#c8f54a','#60a5fa','#f472b6','#f59e0b','#4ade80'];
-const CARRERAS=['Lic. en Administración','Lic. en Marketing','Contador Público','Ing. en Sistemas','Lic. en RRHH','Lic. en Turismo','Abogacía','Psicología','Arquitectura','Otra'];
+const CARRERAS=[
+  // Facultad de Arquitectura y Urbanismo
+  'Arquitectura','Lic. en Diseño de Interiores','Lic. en Diseño Gráfico',
+  // Facultad de Artes y Ciencias
+  'Lic. en Comunicación Social','Lic. en Periodismo','Lic. en Relaciones Públicas',
+  'Lic. en Publicidad','Lic. en Psicología','Prof. en Psicología',
+  // Facultad de Economía y Administración
+  'Lic. en Administración de Empresas','Lic. en Administración Pública',
+  'Contador Público Nacional','Lic. en Comercio Internacional',
+  'Lic. en Marketing','Lic. en Economía','Tecnicatura en Administración',
+  // Facultad de Ciencias Jurídicas
+  'Abogacía','Lic. en Ciencias Políticas','Notariado',
+  // Facultad de Ingeniería
+  'Ing. Civil','Ing. en Informática','Ing. Industrial',
+  'Ing. Electrónica','Ing. en Sistemas de Información',
+  'Tecnicatura en Programación','Tecnicatura Universitaria en Telecomunicaciones',
+  // Facultad de Ciencias Agrarias y Veterinarias
+  'Ing. Agronómica','Medicina Veterinaria','Lic. en Bromatología',
+  'Tecnicatura en Gestión Agropecuaria',
+  // Facultad de Ciencias de la Salud
+  'Medicina','Enfermería','Lic. en Enfermería','Lic. en Kinesiología y Fisiatría',
+  'Lic. en Nutrición','Lic. en Fonoaudiología','Lic. en Terapia Ocupacional',
+  'Lic. en Farmacia','Odontología','Lic. en Obstetricia',
+  // Facultad de Educación
+  'Lic. en Ciencias de la Educación','Prof. de Educación Inicial',
+  'Prof. de Educación Primaria','Prof. de Educación Especial',
+  'Prof. de Nivel Medio y Superior en Psicología',
+  // Facultad Escuela de Negocios
+  'Lic. en Recursos Humanos','Lic. en Dirección de Empresas',
+  'Lic. en Logística y Operaciones','MBA (Maestría en Administración)',
+  // Escuela de Educación Física
+  'Prof. en Educación Física','Lic. en Educación Física',
+  'Tecnicatura en Alto Rendimiento Deportivo',
+  // Escuela de Música
+  'Lic. en Música','Prof. de Música','Tecnicatura en Producción Musical',
+  // Escuela de Trabajo Social
+  'Lic. en Trabajo Social','Tecnicatura en Minoridad y Familia',
+  // Escuela de Turismo
+  'Lic. en Turismo','Lic. en Hotelería','Tecnicatura en Turismo y Hotelería',
+  // Escuela de Teología y Filosofía
+  'Lic. en Filosofía','Lic. en Teología','Prof. en Filosofía',
+];
 const AREAS=[{ico:'📊',lbl:'Marketing y Comunicación',sub:'Digital, branding'},{ico:'💰',lbl:'Finanzas y Contabilidad',sub:'Análisis, auditoría'},{ico:'💻',lbl:'Tecnología y Sistemas',sub:'Dev, data, IA'},{ico:'👥',lbl:'Recursos Humanos',sub:'Selección, cultura'},{ico:'📦',lbl:'Operaciones y Logística',sub:'Supply chain'},{ico:'⚖️',lbl:'Legal y Consultoría',sub:'Derecho, asesoría'},{ico:'🏗️',lbl:'Ingeniería',sub:'Proyectos, obras'},{ico:'🎯',lbl:'Ventas y Comercial',sub:'B2B, B2C'}];
 const SKILLS=[{id:'excel',label:'Excel / hojas de cálculo'},{id:'ingles',label:'Inglés profesional'},{id:'datos',label:'Análisis de datos / BI'},{id:'digital',label:'Herramientas digitales'},{id:'liderazgo',label:'Liderazgo y equipos'},{id:'comunic',label:'Comunicación y presentación'}];
 const SKILL_LABELS=['Ninguno','Básico','Intermedio','Avanzado','Experto'];
@@ -664,7 +705,12 @@ function wiz0(){return`
   </div>
   <div class="form-row"><label class="form-label">Mail personal</label><input class="form-input" type="email" placeholder="tu@mail.com" value="${profile.mail}" oninput="profile.mail=this.value"/></div>
   <div class="grid-2">
-    <div class="form-row"><label class="form-label">Carrera</label><select class="form-select" onchange="profile.carrera=this.value;renderWizardSteps()"><option value="">Seleccioná...</option>${CARRERAS.map(c=>`<option value="${c}" ${profile.carrera===c?'selected':''}>${c}</option>`).join('')}</select></div>
+    <div class="form-row"><label class="form-label">Carrera</label>
+      <div style="position:relative">
+        <input class="form-input" id="carrera-input" placeholder="Escribí para buscar tu carrera..." value="${profile.carrera}" oninput="filtrarCarreras(this.value)" autocomplete="off" style="width:100%"/>
+        <div id="carrera-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;margin-top:4px;box-shadow:0 8px 24px rgba(0,0,0,0.4)"></div>
+      </div>
+    </div>
     <div class="form-row"><label class="form-label">Año</label><select class="form-select" onchange="profile.año=parseInt(this.value)">${[1,2,3,4,5].map(a=>`<option value="${a}" ${profile.año===a?'selected':''}>${a}° año</option>`).join('')}</select></div>
   </div>
   <button class="btn-next btn-full" onclick="nextWizStep()">Continuar →</button>`;}
@@ -710,6 +756,27 @@ function wiz4(){
     ${[['Habilidades evaluadas','6 áreas','#c8f54a'],[`${br} brechas`,br>2?'a trabajar':'detectadas',br>2?'#ff4d4d':'#f59e0b'],['IA lista','personalizada','#4ade80']].map(([v,l,c])=>`<div style="background:var(--surface2);border-radius:8px;padding:8px 4px;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:${c}">${v}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${l}</div></div>`).join('')}
   </div>
   <div class="wiz-actions"><button class="btn-back" onclick="prevWizStep()">← Editar</button><button class="btn-next" onclick="launchApp()">Entrar a LevelÜ →</button></div>`;}
+
+function filtrarCarreras(val){
+  const dd=document.getElementById('carrera-dropdown');
+  if(!val.trim()){dd.style.display='none';return;}
+  const matches=CARRERAS.filter(c=>c.toLowerCase().includes(val.toLowerCase())).slice(0,8);
+  if(!matches.length){dd.style.display='none';return;}
+  dd.innerHTML=matches.map(c=>`<div onclick="selCarrera('${c.replace(/'/g,"\'")}');this.parentElement.style.display='none'" style="padding:10px 14px;font-size:13px;color:var(--white);cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='transparent'">${c}</div>`).join('');
+  dd.style.display='block';
+}
+function selCarrera(c){
+  profile.carrera=c;
+  const inp=document.getElementById('carrera-input');
+  if(inp)inp.value=c;
+  const dd=document.getElementById('carrera-dropdown');
+  if(dd)dd.style.display='none';
+  renderWizardSteps();
+}
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('carrera-dropdown');
+  if(dd&&!dd.contains(e.target)&&e.target.id!=='carrera-input')dd.style.display='none';
+});
 
 function nextWizStep(){if(currentStep<4){currentStep++;renderWizard();}}
 function prevWizStep(){if(currentStep>0){currentStep--;renderWizard();}}
