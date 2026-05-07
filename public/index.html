@@ -333,7 +333,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   </section>
 
   <div class="stats-strip">
-    <div class="stat-col"><div class="stat-big">5+</div><div class="stat-lbl">Empresas convenio activas</div></div>
+    <div class="stat-col"><div class="stat-big" style="font-size:58px">72+</div><div class="stat-lbl">Empresas convenio activas</div></div>
     <div class="stat-col"><div class="stat-big">3</div><div class="stat-lbl">Perfiles de usuario integrados</div></div>
     <div class="stat-col"><div class="stat-big">IA</div><div class="stat-lbl">Matching y brechas en tiempo real</div></div>
     <div class="stat-col"><div class="stat-big">0</div><div class="stat-lbl">Portales externos necesarios</div></div>
@@ -363,7 +363,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <div class="conv-inner">
       <div class="conv-lbl reveal">EMPRESAS CONVENIO UCASAL</div>
       <div class="conv-row reveal" style="transition-delay:0.1s">
-        <div class="conv-pill">Banco Macro</div><div class="conv-pill">POSCO</div><div class="conv-pill">Ecogas</div><div class="conv-pill">Ulloa & Asociados</div><div class="conv-pill">+ Nuevas en 2025</div>
+        <div class="conv-pill">Grupo AGV</div><div class="conv-pill">Pan American Energy</div><div class="conv-pill">Posco Argentina</div><div class="conv-pill">Rio Tinto</div><div class="conv-pill">Schlumberger</div><div class="conv-pill">Ledesma</div><div class="conv-pill">Naturgy</div><div class="conv-pill">Scania</div><div class="conv-pill">Nubicom</div><div class="conv-pill">Cervecería Quilmes</div><div class="conv-pill">Exo</div><div class="conv-pill">Municipalidad de Salta</div><div class="conv-pill">+ 60 empresas más</div>
       </div>
     </div>
   </div>
@@ -478,7 +478,60 @@ const CURSOS_UCASAL={excel:{nombre:'Excel y Power BI Avanzado',tipo:'Extensión'
 const TENDENCIAS=[{area:'Inteligencia Artificial aplicada',demanda:94,crecimiento:'+38%',carreras:['Ing. en Sistemas','Lic. en Administración']},{area:'Análisis de datos / BI',demanda:88,crecimiento:'+29%',carreras:['Lic. en Marketing','Contador Público','Lic. en Administración']},{area:'Ciberseguridad',demanda:81,crecimiento:'+45%',carreras:['Ing. en Sistemas']},{area:'Sostenibilidad y ESG',demanda:73,crecimiento:'+22%',carreras:['Lic. en Administración','Contador Público']},{area:'Marketing digital avanzado',demanda:79,crecimiento:'+18%',carreras:['Lic. en Marketing']},{area:'Inglés técnico-profesional',demanda:85,crecimiento:'+12%',carreras:['Ing. en Sistemas','Lic. en Administración','Lic. en Marketing','Contador Público','Lic. en RRHH']}];
 const SUGERENCIAS_FAC=[{titulo:'Diplomatura en IA Aplicada a Negocios',motivo:'El 68% del alumnado carece de competencias en datos/IA. Demanda +38% en 2024.',urgencia:'alta',carreras:'Administración · Marketing'},{titulo:'Certificado en Inglés Técnico-Profesional',motivo:'Brecha de inglés en el 74% del alumnado. Requisito en el 90% de búsquedas activas.',urgencia:'alta',carreras:'Todas las carreras'},{titulo:'Taller de Power BI y Visualización',motivo:'Demandado por Banco Macro, Ulloa & Asoc. y Ecogas. Brecha promedio del 40%.',urgencia:'media',carreras:'Contador Público · Administración'},{titulo:'Módulo de Sostenibilidad y ESG',motivo:'Crecimiento del 22% anual. Sin cobertura curricular actualmente.',urgencia:'media',carreras:'Administración · Contador Público'}];
 const ESTUDIANTES_DEMO=[{id:1,nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',brechas:{excel:35,ingles:25,liderazgo:15,datos:40},score:72,match:true,empresa:'Banco Macro',puesto:'Analista Jr. de Negocios',contacto:'rrhh@bancomacro.com.ar'},{id:2,nombre:'Tomás Herrera',carrera:'Ing. en Sistemas',año:5,avatar:'TH',brechas:{datos:50,digital:45,ingles:20},score:81,match:false},{id:3,nombre:'Lucía Mamani',carrera:'Lic. en Marketing',año:3,avatar:'LM',brechas:{digital:55,datos:45,ingles:35},score:68,match:true,empresa:'POSCO',puesto:'Analista de Comunicación',contacto:'rrhh@posco.com.ar'},{id:4,nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',brechas:{datos:40,ingles:30},score:85,match:true,empresa:'Ulloa & Asociados',puesto:'Analista Contable Senior',contacto:'seleccion@ulloa.com.ar'},{id:5,nombre:'Marina Sosa',carrera:'Lic. en RRHH',año:4,avatar:'MS',brechas:{datos:60,liderazgo:25,comunic:35},score:74,match:false}];
-let BUSQUEDAS=[{id:1,empresa:'Banco Macro',puesto:'Analista Jr. de Negocios',area:'Comercial',skills:['Excel','Análisis financiero','Comunicación'],urgencia:'alta',candidatos:2,fecha:'hace 3 días'},{id:2,empresa:'POSCO',puesto:'Analista de Comunicación',area:'Marketing',skills:['Redes sociales','Redacción','Inglés'],urgencia:'alta',candidatos:1,fecha:'hace 5 días'},{id:3,empresa:'Ecogas',puesto:'Ing. de Procesos',area:'Operaciones',skills:['AutoCAD','ISO 9001','Python'],urgencia:'media',candidatos:0,fecha:'hace 1 semana'},{id:4,empresa:'Ulloa & Asociados',puesto:'Analista Contable Senior',area:'Finanzas',skills:['AFIP','Power BI','Excel'],urgencia:'alta',candidatos:1,fecha:'hace 2 días'}];
+let BUSQUEDAS=[
+  {id:1,empresa:'Pan American Energy',puesto:'Analista de Operaciones',area:'Oil & Gas',skills:['Excel','Inglés técnico','Seguridad industrial'],urgencia:'alta',candidatos:2,fecha:'hace 2 días'},
+  {id:2,empresa:'Posco Argentina',puesto:'Analista de Comunicación',area:'Marketing',skills:['Redes sociales','Redacción','Inglés'],urgencia:'alta',candidatos:1,fecha:'hace 4 días'},
+  {id:3,empresa:'Naturgy',puesto:'Ing. de Procesos',area:'Operaciones',skills:['AutoCAD','ISO 9001','Gestión de proyectos'],urgencia:'media',candidatos:0,fecha:'hace 1 semana'},
+  {id:4,empresa:'Municipalidad de Salta',puesto:'Analista Administrativo',area:'Administración Pública',skills:['Excel','Gestión documental','Atención al ciudadano'],urgencia:'media',candidatos:1,fecha:'hace 3 días'},
+  {id:5,empresa:'Nubicom',puesto:'Técnico de Soporte TI',area:'Tecnología',skills:['Redes','Soporte técnico','Atención al cliente'],urgencia:'alta',candidatos:1,fecha:'hace 1 día'},
+  {id:6,empresa:'Ledesma',puesto:'Analista de RRHH',area:'Recursos Humanos',skills:['Selección de personal','Excel','Liquidación de sueldos'],urgencia:'media',candidatos:2,fecha:'hace 5 días'},
+  {id:7,empresa:'Exo',puesto:'Desarrollador Jr.',area:'Tecnología',skills:['Python','JavaScript','SQL'],urgencia:'alta',candidatos:0,fecha:'hace 2 días'},
+  {id:8,empresa:'Schlumberger',puesto:'Ing. de Campo',area:'Oil & Gas',skills:['Inglés avanzado','AutoCAD','Trabajo en campo'],urgencia:'alta',candidatos:0,fecha:'hace 1 semana'},
+  {id:9,empresa:'Cervecería Quilmes',puesto:'Analista de Marketing',area:'Marketing',skills:['Marketing digital','Google Ads','Análisis de datos'],urgencia:'media',candidatos:1,fecha:'hace 6 días'},
+  {id:10,empresa:'Scania',puesto:'Asesor Comercial',area:'Comercial',skills:['Ventas','CRM','Inglés'],urgencia:'baja',candidatos:0,fecha:'hace 2 semanas'},
+  {id:11,empresa:'Rio Tinto',puesto:'Analista Ambiental',area:'Medio Ambiente',skills:['Normativa ambiental','Excel','Inglés'],urgencia:'media',candidatos:1,fecha:'hace 4 días'},
+  {id:12,empresa:'Grupo AGV',puesto:'Contador Jr.',area:'Finanzas',skills:['AFIP','Excel avanzado','Liquidación de sueldos'],urgencia:'alta',candidatos:2,fecha:'hace 1 día'},
+];
+const TODAS_EMPRESAS_CONVENIO=[
+  {nombre:'Grupo AGV',sector:'Holding / Inversiones'},{nombre:'Grupo CENOA',sector:'Comercial / Retail'},
+  {nombre:'Grupo MDAY',sector:'Servicios'},{nombre:'Grupo Eurodycar',sector:'Automotriz'},
+  {nombre:'Borgen-Betzel',sector:'Industria'},{nombre:'Caja de Seguridad Social para Profesionales',sector:'Servicios Profesionales'},
+  {nombre:'Carfila S.R.L.',sector:'Comercial'},{nombre:'Cervecería y Maltería Quilmes',sector:'Alimentos y Bebidas'},
+  {nombre:'Círculo Médico de Salta',sector:'Salud'},{nombre:'Club de Gimnasia y Tiro',sector:'Deporte'},
+  {nombre:'Colegio de Arquitectos',sector:'Servicios Profesionales'},{nombre:'Come-Sano',sector:'Alimentos'},
+  {nombre:'Control-Loop (Galvanizados del Norte)',sector:'Industria'},{nombre:'Copelectric',sector:'Energía'},
+  {nombre:'Cristalizando',sector:'Servicios'},{nombre:'Droguería y Farmacia Sudamericana',sector:'Salud'},
+  {nombre:'Edelman S.R.L.',sector:'Consultoría'},{nombre:'Edesa',sector:'Energía'},
+  {nombre:'Ente Regulador de Servicios Públicos',sector:'Estado'},{nombre:'Ergy',sector:'Energía'},
+  {nombre:'Exo',sector:'Tecnología'},{nombre:'Express Telecomunicaciones',sector:'Telecomunicaciones'},
+  {nombre:'Gomez-Roco y Cia S.R.L.',sector:'Comercial'},{nombre:'Hanaq',sector:'Servicios'},
+  {nombre:'Imec Ingeniería 360',sector:'Ingeniería'},{nombre:'Infonoa',sector:'Tecnología / Medios'},
+  {nombre:'Integral Medicina Familiar',sector:'Salud'},{nombre:'Intedya',sector:'Consultoría'},
+  {nombre:'Integra-Media',sector:'Medios'},{nombre:'Inversiones (Varios)',sector:'Finanzas'},
+  {nombre:'Juramento Agroindustrias y Alimentos',sector:'Agroindustria'},{nombre:'La Peatonal',sector:'Comercial'},
+  {nombre:'La Veloz del Norte',sector:'Transporte'},{nombre:'Ledesma',sector:'Agroindustria'},
+  {nombre:'Litoral Citrus',sector:'Agroindustria'},{nombre:'Logos Pagina-Web',sector:'Marketing Digital'},
+  {nombre:'Luis Castellani',sector:'Comercial'},{nombre:'Lumi People',sector:'RRHH'},
+  {nombre:'Made',sector:'Servicios'},{nombre:'Mansfield Minera S.A.',sector:'Minería'},
+  {nombre:'Metalnor',sector:'Industria'},{nombre:'Minera Miramar-Kaizen',sector:'Minería'},
+  {nombre:'Municipalidad de Salta',sector:'Estado'},{nombre:'Municipalidad de San Lorenzo',sector:'Estado'},
+  {nombre:'Naturgy',sector:'Energía / Gas'},{nombre:'Neca',sector:'Construcción'},
+  {nombre:'Nivel Seguros',sector:'Seguros'},{nombre:'Noa-Aberturas',sector:'Construcción'},
+  {nombre:'NRG',sector:'Energía'},{nombre:'Nubicom',sector:'Telecomunicaciones'},
+  {nombre:'Pan American Energy',sector:'Oil & Gas'},{nombre:'Petroandina',sector:'Oil & Gas'},
+  {nombre:'Pirerayen Automotores',sector:'Automotriz'},{nombre:'Posco Argentina',sector:'Industria / Acero'},
+  {nombre:'Productos Alimenticios Sofía',sector:'Alimentos'},{nombre:'Proyecto-Norte',sector:'Consultoría'},
+  {nombre:'Radiodifusora Salta',sector:'Medios'},{nombre:'RFB-Tecnología',sector:'Tecnología'},
+  {nombre:'Rio Tinto',sector:'Minería'},{nombre:'Saltapor',sector:'Logística'},
+  {nombre:'Scania',sector:'Automotriz / Transporte'},{nombre:'Schlumberger',sector:'Oil & Gas'},
+  {nombre:'Servicios Industria SAS',sector:'Consultoría Industrial'},{nombre:'Soda Ideal',sector:'Alimentos'},
+  {nombre:'Superior Energy Services',sector:'Oil & Gas'},{nombre:'Sydiex',sector:'Tecnología'},
+  {nombre:'Terminal Salta',sector:'Logística / Transporte'},{nombre:'Tomografía Computada',sector:'Salud'},
+  {nombre:'Tres Cerritos Hospital Privado',sector:'Salud'},{nombre:'Valerza',sector:'Servicios'},
+  {nombre:'Warner',sector:'Medios'},{nombre:'Yuhmak',sector:'Comercial'},
+  {nombre:'Zelandez',sector:'Servicios'},{nombre:'Zoxi',sector:'Tecnología'},
+];
+
 let INTENCIONES=[{id:1,empresa:'Banco Macro',perfil:'Analistas de riesgo crediticio',cantidad:3,trimestre:'Q3 2025',skills:['Estadística','Excel','Normativa BCRA'],estado:'confirmada'},{id:2,empresa:'POSCO',perfil:'Ingenieros de procesos',cantidad:2,trimestre:'Q4 2025',skills:['AutoCAD','ISO 9001','Inglés técnico'],estado:'estimada'},{id:3,empresa:'Ecogas',perfil:'Coordinadores de proyectos',cantidad:1,trimestre:'Q1 2026',skills:['PMO','Liderazgo','MS Project'],estado:'estimada'}];
 const PREGUNTAS_SIM={'Analista Jr. de Negocios':['¿Cómo manejarías un cliente insatisfecho con los resultados del mes?','Describí un logro concreto y medible en tu formación o trabajo.','¿Qué herramientas usás para organizar y analizar información?'],'Analista de Comunicación':['¿Cómo construirías una estrategia de contenido desde cero?','¿Qué KPIs usarías para medir el éxito en redes sociales?','¿Cómo manejarías una crisis comunicacional?'],'Analista Contable Senior':['¿Cómo te mantenés actualizado con la normativa AFIP?','Describí un cierre contable complejo que hayas gestionado.','¿Qué diferencia hay entre contabilidad financiera y de gestión?'],'Ing. de Procesos':['¿Cómo abordarías la mejora de un proceso productivo?','¿Qué metodologías de calidad conocés?','Describí un proyecto técnico que hayas liderado.'],default:['¿Por qué te interesa este puesto?','¿Cuál es tu mayor fortaleza profesional?','¿Cómo trabajás bajo presión?']};
 const PERSONAS_SUGG={1:['¿Qué habilidades conviene arrancar desde primer año?','¿Cómo va a impactar la IA en mi carrera?','¿Qué certificaciones conviene hacer?'],2:['¿Qué especializaciones tienen más salida en mi área?','¿Qué herramientas digitales debo aprender?','¿Conviene hacer cursos online mientras estudio?'],3:['¿Qué piden las empresas para pasantías en mi carrera?','¿Qué nivel de inglés se exige realmente?','¿Cómo están cambiando los requisitos con la IA?'],4:['¿Qué me falta para ser competitivo/a al recibirme?','¿Cuánto tiempo lleva cerrar mis brechas?','¿Cómo está el mercado en mi área ahora?'],5:['¿Qué buscan las empresas del NOA en candidatos como yo?','¿Cómo preparar una entrevista para mi área?','¿Qué sueldo puedo esperar en Salta?']};
@@ -831,13 +884,34 @@ const VIEWS={
   empresas:(el)=>{
     // Candidatos que matchean por búsqueda
     const candidatosPorBusqueda={
-      1:[{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:92,color:'#c8f54a'},{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:78,color:'#60a5fa'}],
+      1:[{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:88,color:'#c8f54a'},{nombre:'Tomás Herrera',carrera:'Ing. en Sistemas',año:5,avatar:'TH',match:74,color:'#60a5fa'}],
       2:[{nombre:'Lucía Mamani',carrera:'Lic. en Marketing',año:3,avatar:'LM',match:85,color:'#f472b6'}],
       3:[],
-      4:[{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:90,color:'#60a5fa'}],
+      4:[{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:82,color:'#c8f54a'},{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:76,color:'#60a5fa'}],
+      5:[{nombre:'Tomás Herrera',carrera:'Ing. en Sistemas',año:5,avatar:'TH',match:91,color:'#60a5fa'}],
+      6:[{nombre:'Marina Sosa',carrera:'Lic. en RRHH',año:4,avatar:'MS',match:88,color:'#4ade80'},{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:72,color:'#c8f54a'}],
+      7:[],
+      8:[],
+      9:[{nombre:'Lucía Mamani',carrera:'Lic. en Marketing',año:3,avatar:'LM',match:79,color:'#f472b6'}],
+      10:[],
+      11:[{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:77,color:'#60a5fa'}],
+      12:[{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:94,color:'#60a5fa'},{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:81,color:'#c8f54a'}],
     };
     el.innerHTML=`
-      <div class="view-header"><div><div class="view-title">Panel Empresas</div><div class="view-sub">Búsquedas activas · candidatos UCASAL que matchean</div></div></div>
+      <div class="view-header"><div><div class="view-title">Panel Empresas</div><div class="view-sub">${TODAS_EMPRESAS_CONVENIO.length} empresas convenio · búsquedas activas · candidatos que matchean</div></div></div>
+      
+      <!-- Directorio completo -->
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-title">Directorio de empresas convenio UCASAL</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap" id="sector-filters">
+          ${['Todos',...new Set(TODAS_EMPRESAS_CONVENIO.map(e=>e.sector.split(' /')[0].trim()))].slice(0,8).map((s,i)=>`<button onclick="filtrarSector('${s}')" id="sf-${i}" style="padding:5px 12px;border-radius:99px;border:1px solid ${i===0?'#c8f54a':'var(--border)'};background:${i===0?'rgba(200,245,74,0.1)':'transparent'};color:${i===0?'#c8f54a':'var(--muted)'};font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">${s}</button>`).join('')}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;max-height:240px;overflow-y:auto" id="empresas-dir">
+          ${TODAS_EMPRESAS_CONVENIO.map(e=>`<div style="background:var(--surface2);border-radius:8px;padding:8px 10px;border:1px solid var(--border)" data-sector="${e.sector}"><div style="font-size:12px;font-weight:600;color:var(--white)">${e.nombre}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${e.sector}</div></div>`).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;text-align:right">${TODAS_EMPRESAS_CONVENIO.length} empresas en convenio con UCASAL</div>
+      </div>
+
       <div class="g2">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem">
@@ -1008,6 +1082,21 @@ function renderInt(ok=false){
   if(ok){document.getElementById('int-content').innerHTML=`<div style="text-align:center;padding:1.5rem 0"><div style="font-size:40px;margin-bottom:10px">✅</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:8px">¡Intención registrada!</div><div style="font-size:13px;color:var(--muted);margin-bottom:1.5rem">UCASAL preparará candidatos para el <b style="color:var(--white)">${intForm.trimestre}</b>.</div><button onclick="closeModal('modal-int')" style="background:var(--lime);border:none;border-radius:10px;padding:11px 24px;font-size:13px;font-weight:700;color:var(--lime-text);cursor:pointer;font-family:inherit">Cerrar</button></div>`;return;}
   document.getElementById('int-content').innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:1rem">Contanos qué perfiles vas a necesitar para que UCASAL prepare candidatos con anticipación.</div>${[['Empresa','empresa','ej: Banco Macro'],['Perfil requerido','perfil','ej: Analistas de riesgo'],['Cantidad estimada','cantidad','ej: 3'],['Habilidades clave','skills','ej: Excel, Estadística']].map(([l,k,ph])=>`<div class="form-row"><label class="form-label">${l}</label><input class="form-input" value="${intForm[k]}" placeholder="${ph}" oninput="intForm['${k}']=this.value"/></div>`).join('')}<div class="form-row"><label class="form-label">Trimestre</label><div style="display:flex;gap:6px">${['Q3 2025','Q4 2025','Q1 2026','Q2 2026'].map(q=>`<button onclick="intForm.trimestre='${q}';renderInt()" style="flex:1;padding:8px 4px;border-radius:9px;border:1px solid ${intForm.trimestre===q?'#a78bfa':'var(--border)'};background:${intForm.trimestre===q?'rgba(167,139,250,0.12)':'transparent'};color:${intForm.trimestre===q?'#a78bfa':'var(--muted)'};font-weight:600;font-size:11px;cursor:pointer;font-family:inherit">${q}</button>`).join('')}</div></div><div style="display:flex;gap:8px;margin-top:1.25rem"><button onclick="closeModal('modal-int')" style="flex:1;background:transparent;border:1px solid var(--border2);border-radius:9px;padding:10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit">Cancelar</button><button onclick="guardarInt()" ${!(intForm.empresa&&intForm.perfil&&intForm.cantidad)?'disabled':''} style="flex:2;background:#a78bfa;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;color:#0c0c0c;cursor:pointer;font-family:inherit">Enviar a UCASAL →</button></div>`;}
 function guardarInt(){INTENCIONES.unshift({id:Date.now(),empresa:intForm.empresa,perfil:intForm.perfil,cantidad:parseInt(intForm.cantidad)||1,trimestre:intForm.trimestre,skills:intForm.skills.split(',').map(s=>s.trim()).filter(Boolean),estado:'estimada'});renderInt(true);setTimeout(()=>{closeModal('modal-int');switchView('empresas');},2000);}
+
+// ═══════════════ EMPRESAS DIRECTORIO ═══════════════
+function filtrarSector(sector){
+  const cards=document.querySelectorAll('#empresas-dir > div');
+  cards.forEach(c=>{
+    const s=c.getAttribute('data-sector')||'';
+    c.style.display=(sector==='Todos'||s.includes(sector))?'':'none';
+  });
+  document.querySelectorAll('#sector-filters button').forEach(b=>{
+    const active=b.textContent===sector;
+    b.style.borderColor=active?'#c8f54a':'var(--border)';
+    b.style.background=active?'rgba(200,245,74,0.1)':'transparent';
+    b.style.color=active?'#c8f54a':'var(--muted)';
+  });
+}
 
 // ═══════════════ LANDING REVEAL & NAV ═══════════════
 const mainNav=document.getElementById('main-nav');
