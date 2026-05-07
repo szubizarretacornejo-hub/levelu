@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LevelÜ — Nivelate con el mercado · UCASAL</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet"/>
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#c8f54a"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="LevelÜ"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
 <style>
 /* ── RESET & VARS ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1174,6 +1183,15 @@ document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 // ═══════════════ INIT ═══════════════
 SKILLS.forEach(s=>{if(profile.skills[s.id]===undefined)profile.skills[s.id]=2;});
 // Init normal — landing page
+
+// ═══════════════ PWA SERVICE WORKER ═══════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('/sw.js')
+      .then(()=>console.log('LevelÜ PWA ready ✓'))
+      .catch(e=>console.log('SW error:', e));
+  });
+}
 </script>
 </body>
 </html>
