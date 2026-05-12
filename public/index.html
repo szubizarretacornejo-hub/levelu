@@ -401,6 +401,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   </div>
 </div>
 
+<!-- ═══ EMPRESA LOGIN ═══ -->
+<div id="screen-empresa-login" class="screen">
+  <div style="min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:2rem">
+    <div style="width:100%;max-width:420px">
+      <div id="empresa-login-content"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ ONBOARDING ═══ -->
 <div id="screen-onboarding" class="screen">
   <div class="ob-left">
@@ -596,6 +605,7 @@ let simFase='config',simPuesto='',simChat=[],simPregIdx=0,simLoading=false,simRe
 let nbForm={empresa:'',puesto:'',area:'',skills:'',urgencia:'media'};
 let intForm={empresa:'',perfil:'',cantidad:'',trimestre:'Q3 2025',skills:''};
 let activeView=null;
+let currentEmpresa=null;
 
 // ═══════════════ HELPERS ═══════════════
 const scoreColor=s=>s>=80?'#4ade80':s>=68?'#f59e0b':'#ff4d4d';
@@ -657,7 +667,7 @@ function selectRol(rol){
   } else if(rol==='facultad'){
     showScreen('app');buildSidebarRol('facultad');switchView('facultad');
   } else if(rol==='empresa'){
-    showScreen('app');buildSidebarRol('empresa');switchView('empresas');
+    showScreen('empresa-login');renderEmpresaLogin();
   }
 }
 function doLogout(){
@@ -766,6 +776,118 @@ function wiz4(){
   </div>
   <div class="wiz-actions"><button class="btn-back" onclick="prevWizStep()">← Editar</button><button class="btn-next" onclick="launchApp()">Entrar a LevelÜ →</button></div>`;}
 
+// ═══════════════ EMPRESA LOGIN ═══════════════
+const EMPRESA_PASSWORD = 'ucasal2025'; // contraseña demo para todas las empresas
+let empresaLoginData = {nombre:'', password:''};
+let empresaLoginError = '';
+
+function renderEmpresaLogin(){
+  const el = document.getElementById('empresa-login-content');
+  if(!el) return;
+  el.innerHTML = `
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:1.5rem">
+        <svg width="36" height="36" viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="14" fill="#161616"/><rect x="28" y="12" width="15" height="15" rx="3" fill="#c8f54a"/><rect x="57" y="12" width="15" height="15" rx="3" fill="#c8f54a"/><path d="M26 34L26 63Q26 82 50 82Q74 82 74 63L74 34L59 34L59 63Q59 70 50 70Q41 70 41 63L41 34Z" fill="#f0f0eb"/></svg>
+        <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:900;letter-spacing:-0.04em">Level<span style="color:var(--lime)">Ü</span></div>
+      </div>
+      <div style="font-size:16px;font-weight:600;color:var(--white);margin-bottom:4px">Acceso empresas</div>
+      <div style="font-size:13px;color:var(--muted)">Ingresá con las credenciales de tu empresa</div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem">
+      
+      <div class="form-row">
+        <label class="form-label">Empresa</label>
+        <div style="position:relative">
+          <input class="form-input" id="emp-nombre-input" 
+            placeholder="Buscá tu empresa..." 
+            value="${empresaLoginData.nombre}"
+            oninput="filtrarEmpresas(this.value)" 
+            autocomplete="off"
+            style="width:100%"/>
+          <div id="emp-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;margin-top:4px;box-shadow:0 8px 24px rgba(0,0,0,0.5)"></div>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:0.75rem">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" id="emp-pass-input" 
+          type="password" 
+          placeholder="••••••••••"
+          value="${empresaLoginData.password}"
+          oninput="empresaLoginData.password=this.value"
+          onkeydown="if(event.key==='Enter')doEmpresaLogin()"/>
+      </div>
+
+      ${empresaLoginError ? `<div style="background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#ff4d4d;margin-bottom:1rem">${empresaLoginError}</div>` : ''}
+
+      <button onclick="doEmpresaLogin()" style="width:100%;background:var(--lime);border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:var(--lime-text);cursor:pointer;font-family:inherit;margin-top:0.5rem">
+        Ingresar →
+      </button>
+
+      <div style="text-align:center;margin-top:1.25rem">
+        <button onclick="showScreen('roles');renderRoles()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit">← Volver</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:1.5rem">
+      <div style="font-size:11px;color:var(--muted2)">¿No tenés acceso? Contactá a UCASAL para obtener tus credenciales.</div>
+    </div>`;
+}
+
+function filtrarEmpresas(val){
+  const dd = document.getElementById('emp-dropdown');
+  empresaLoginData.nombre = val;
+  if(!val.trim()){dd.style.display='none';return;}
+  const matches = TODAS_EMPRESAS_CONVENIO.filter(e=>e.nombre.toLowerCase().includes(val.toLowerCase())).slice(0,8);
+  if(!matches.length){dd.style.display='none';return;}
+  dd.innerHTML = matches.map(e=>`
+    <div onclick="selEmpresaLogin('${e.nombre.replace(/'/g,"\'")}');this.parentElement.style.display='none'" 
+      style="padding:10px 14px;font-size:13px;color:var(--white);cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s"
+      onmouseover="this.style.background='var(--surface3)'" 
+      onmouseout="this.style.background='transparent'">
+      <div style="font-weight:600">${e.nombre}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:1px">${e.sector}</div>
+    </div>`).join('');
+  dd.style.display='block';
+}
+
+function selEmpresaLogin(nombre){
+  empresaLoginData.nombre = nombre;
+  const inp = document.getElementById('emp-nombre-input');
+  if(inp) inp.value = nombre;
+  const dd = document.getElementById('emp-dropdown');
+  if(dd) dd.style.display='none';
+  document.getElementById('emp-pass-input')?.focus();
+}
+
+function doEmpresaLogin(){
+  empresaLoginError = '';
+  if(!empresaLoginData.nombre){
+    empresaLoginError = 'Seleccioná tu empresa del listado.';
+    renderEmpresaLogin(); return;
+  }
+  if(!empresaLoginData.password){
+    empresaLoginError = 'Ingresá tu contraseña.';
+    renderEmpresaLogin(); return;
+  }
+  if(empresaLoginData.password !== EMPRESA_PASSWORD){
+    empresaLoginError = 'Contraseña incorrecta. Contactá a UCASAL si no la recordás.';
+    renderEmpresaLogin(); return;
+  }
+  // Login exitoso
+  currentRol = 'empresa';
+  currentEmpresa = empresaLoginData.nombre;
+  showScreen('app');
+  buildSidebarEmpresa();
+  switchView('empresas');
+}
+
+document.addEventListener('click', e=>{
+  const dd = document.getElementById('emp-dropdown');
+  if(dd && !dd.contains(e.target) && e.target.id !== 'emp-nombre-input') dd.style.display='none';
+});
+
 function filtrarCarreras(val){
   const dd=document.getElementById('carrera-dropdown');
   if(!val.trim()){dd.style.display='none';return;}
@@ -803,6 +925,32 @@ function launchApp(){
   switchView('perfil');
 }
 
+function buildSidebarEmpresa(){
+  const av = document.getElementById('sb-avatar');
+  // Iniciales de la empresa
+  const words = (currentEmpresa||'E').split(' ');
+  const initials = words.length >= 2 ? words[0][0]+words[1][0] : words[0].substring(0,2);
+  av.textContent = initials.toUpperCase();
+  av.style.background = 'rgba(200,245,74,0.12)';
+  av.style.border = '1.5px solid rgba(200,245,74,0.3)';
+  av.style.color = 'var(--lime)';
+  av.style.fontSize = '12px';
+  document.getElementById('sb-name').textContent = currentEmpresa || 'Empresa';
+  document.getElementById('sb-role').textContent = 'Panel empresa';
+
+  const items = [
+    {section:'Mi empresa'},
+    {id:'empresas', label:'Búsquedas activas', ico:'🔍'},
+    {id:'emp-intencion', label:'Intención futura', ico:'📋'},
+    {section:''},
+    {id:'landing', label:'Cerrar sesión', ico:'⏏'},
+  ];
+  document.getElementById('sidebar-nav').innerHTML = items.map(item=>{
+    if(item.section!==undefined) return item.section ? `<div class="sidebar-section">${item.section}</div>` : '<div style="margin-top:6px"></div>';
+    return `<div class="sidebar-item" id="nav-${item.id}" onclick="switchView('${item.id}')">${item.ico ? `<span class="s-ico">${item.ico}</span>` : ''} ${item.label}</div>`;
+  }).join('');
+}
+
 function buildSidebarRol(rol){
   // Avatar y nombre según rol
   const av=document.getElementById('sb-avatar');
@@ -819,13 +967,16 @@ function buildSidebarRol(rol){
   const navFacultad=[
     {section:'Panel institucional'},
     {id:'facultad',label:'Dashboard alumnado',ico:'📊'},
-    {id:'mercado',label:'Radar de mercado',ico:'📈'},
+    {id:'fac-cursos',label:'Sugerencias de cursos',ico:'💡'},
+    {id:'mercado-fac',label:'Radar de mercado',ico:'📈'},
     {section:''},
     {id:'landing',label:'Volver al inicio',ico:'←'},
   ];
   const navEmpresa=[
-    {section:'Panel empresa'},
-    {id:'empresas',label:'Mis búsquedas',ico:'🏢'},
+    {section:'Mi empresa'},
+    {id:'empresas',label:'Búsquedas activas',ico:'🔍'},
+    {id:'emp-intencion',label:'Intención futura',ico:'📋'},
+    {id:'emp-directorio',label:'Directorio UCASAL',ico:'🏛️'},
     {section:''},
     {id:'landing',label:'Volver al inicio',ico:'←'},
   ];
@@ -851,9 +1002,6 @@ function buildSidebar(){
     {id:'perfil',label:'Mi perfil',ico:'📊'},
     {id:'asistente',label:'Asistente IA',ico:'💬'},
     {id:'mercado',label:'Radar de mercado',ico:'📈'},
-    {section:'Institución'},
-    {id:'facultad',label:'Panel facultad',ico:'🏛️'},
-    {id:'empresas',label:'Panel empresas',ico:'🏢'},
     {section:''},
     {id:'landing',label:'Volver al inicio',ico:'←'},
   ];
@@ -865,6 +1013,14 @@ function buildSidebar(){
 
 function switchView(id){
   if(id==='landing'){doLogout();return;}
+  // Protección de roles — bloquear acceso cruzado
+  const alumnoViews=['perfil','asistente','mercado'];
+  const facultadViews=['facultad','fac-cursos','mercado-fac'];
+  const empresaViews=['empresas','emp-intencion','emp-directorio'];
+  if(currentRol==='alumno' && !alumnoViews.includes(id)) return;
+  if(currentRol==='facultad' && !facultadViews.includes(id)) return;
+  if(currentRol==='empresa' && !empresaViews.includes(id)) return;
+  // Allow landing always
   activeView=id;
   document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
   document.getElementById('nav-'+id)?.classList.add('active');
@@ -925,7 +1081,7 @@ const VIEWS={
         </div>
         <div class="chat-right">
           <div class="chat-right-title">Búsquedas activas</div>
-          ${BUSQUEDAS.map(b=>`<div class="puesto-item"><div class="puesto-item-name">${b.puesto}</div><div class="puesto-item-emp">${b.empresa} · ${b.area}</div><div style="font-size:10px;font-weight:700;color:${urgColor(b.urgencia)};margin-top:3px">Urgencia ${b.urgencia}</div></div>`).join('')}
+          ${misBusquedas.map(b=>`<div class="puesto-item"><div class="puesto-item-name">${b.puesto}</div><div class="puesto-item-emp">${b.empresa} · ${b.area}</div><div style="font-size:10px;font-weight:700;color:${urgColor(b.urgencia)};margin-top:3px">Urgencia ${b.urgencia}</div></div>`).join('')}
         </div>
       </div>`;
     addChatBubble('ai',welcome);
@@ -958,72 +1114,116 @@ const VIEWS={
   },
 
   empresas:(el)=>{
-    // Candidatos que matchean por búsqueda
+    const misBusquedas = BUSQUEDAS.filter(b => b.empresa === currentEmpresa);
+    const misIntenciones = INTENCIONES.filter(i => i.empresa === currentEmpresa);
+    
     const candidatosPorBusqueda={
-      1:[{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:88,color:'#c8f54a'},{nombre:'Tomás Herrera',carrera:'Ing. en Sistemas',año:5,avatar:'TH',match:74,color:'#60a5fa'}],
+      1:[{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:92,color:'#c8f54a'},{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:78,color:'#60a5fa'}],
       2:[{nombre:'Lucía Mamani',carrera:'Lic. en Marketing',año:3,avatar:'LM',match:85,color:'#f472b6'}],
       3:[],
       4:[{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:82,color:'#c8f54a'},{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:76,color:'#60a5fa'}],
       5:[{nombre:'Tomás Herrera',carrera:'Ing. en Sistemas',año:5,avatar:'TH',match:91,color:'#60a5fa'}],
       6:[{nombre:'Marina Sosa',carrera:'Lic. en RRHH',año:4,avatar:'MS',match:88,color:'#4ade80'},{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:72,color:'#c8f54a'}],
-      7:[],
-      8:[],
+      7:[],8:[],
       9:[{nombre:'Lucía Mamani',carrera:'Lic. en Marketing',año:3,avatar:'LM',match:79,color:'#f472b6'}],
       10:[],
       11:[{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:77,color:'#60a5fa'}],
       12:[{nombre:'Ezequiel Vargas',carrera:'Contador Público',año:5,avatar:'EV',match:94,color:'#60a5fa'},{nombre:'Valentina Ríos',carrera:'Lic. en Administración',año:4,avatar:'VR',match:81,color:'#c8f54a'}],
     };
-    el.innerHTML=`
-      <div class="view-header"><div><div class="view-title">Panel Empresas</div><div class="view-sub">${TODAS_EMPRESAS_CONVENIO.length} empresas convenio · búsquedas activas · candidatos que matchean</div></div></div>
-      
-      <!-- Directorio completo -->
-      <div class="card" style="margin-bottom:1.25rem">
-        <div class="card-title">Directorio de empresas convenio UCASAL</div>
-        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap" id="sector-filters">
-          ${['Todos',...new Set(TODAS_EMPRESAS_CONVENIO.map(e=>e.sector.split(' /')[0].trim()))].slice(0,8).map((s,i)=>`<button onclick="filtrarSector('${s}')" id="sf-${i}" style="padding:5px 12px;border-radius:99px;border:1px solid ${i===0?'#c8f54a':'var(--border)'};background:${i===0?'rgba(200,245,74,0.1)':'transparent'};color:${i===0?'#c8f54a':'var(--muted)'};font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">${s}</button>`).join('')}
+
+    // Stats rápidas
+    const totalCandidatos = misBusquedas.reduce((a,b) => a + (candidatosPorBusqueda[b.id]||[]).length, 0);
+    const totalIntenciones = misIntenciones.reduce((a,i) => a + i.cantidad, 0);
+
+    el.innerHTML = `
+      <div class="view-header">
+        <div>
+          <div class="view-title">${currentEmpresa}</div>
+          <div class="view-sub">Panel de empleabilidad · UCASAL</div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;max-height:240px;overflow-y:auto" id="empresas-dir">
-          ${TODAS_EMPRESAS_CONVENIO.map(e=>`<div style="background:var(--surface2);border-radius:8px;padding:8px 10px;border:1px solid var(--border)" data-sector="${e.sector}"><div style="font-size:12px;font-weight:600;color:var(--white)">${e.nombre}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${e.sector}</div></div>`).join('')}
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:10px;text-align:right">${TODAS_EMPRESAS_CONVENIO.length} empresas en convenio con UCASAL</div>
+        <button onclick="openNB()" style="background:var(--lime);border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:700;color:var(--lime-text);cursor:pointer">+ Nueva búsqueda</button>
       </div>
 
-      <div class="g2">
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem">
-            <div class="card-title" style="margin-bottom:0">🏢 Búsquedas activas</div>
-            <button onclick="openNB()" style="background:transparent;border:1px solid rgba(200,245,74,0.4);color:var(--lime);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Nueva</button>
-          </div>
-          ${BUSQUEDAS.map(b=>`
-            <div class="emp-card" style="border-left-color:${urgColor(b.urgencia)};margin-bottom:10px">
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <div><div style="font-weight:700;font-size:13px">${b.puesto}</div><div style="font-size:10px;color:var(--muted)">${b.empresa} · ${b.fecha}</div></div>
-                ${pill(b.urgencia,urgColor(b.urgencia))}
+      <!-- Stats -->
+      <div class="g3" style="margin-bottom:1.5rem">
+        <div class="stat-card">
+          <div class="sc-num" style="color:var(--lime)">${misBusquedas.length}</div>
+          <div class="sc-lbl">Búsquedas activas</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-num" style="color:#4ade80">${totalCandidatos}</div>
+          <div class="sc-lbl">Candidatos UCASAL con match</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-num" style="color:#a78bfa">${totalIntenciones}</div>
+          <div class="sc-lbl">Posiciones futuras registradas</div>
+        </div>
+      </div>
+
+      <!-- Búsquedas con candidatos -->
+      <div style="margin-bottom:1.25rem">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;margin-bottom:1rem">Búsquedas activas y candidatos que matchean</div>
+        ${misBusquedas.length === 0 ? `
+          <div class="card" style="text-align:center;padding:2.5rem">
+            <div style="font-size:32px;margin-bottom:10px">📭</div>
+            <div style="font-size:14px;color:var(--muted)">No tenés búsquedas activas todavía.</div>
+            <button onclick="openNB()" style="margin-top:1rem;background:var(--lime);border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;color:var(--lime-text);cursor:pointer">Publicar primera búsqueda</button>
+          </div>` 
+        : misBusquedas.map(b => {
+            const cands = candidatosPorBusqueda[b.id] || [];
+            return `
+            <div class="card" style="border-left:3px solid ${urgColor(b.urgencia)};margin-bottom:1rem">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+                <div>
+                  <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800">${b.puesto}</div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:3px">${b.area} · Publicado ${b.fecha}</div>
+                </div>
+                ${pill(b.urgencia, urgColor(b.urgencia))}
               </div>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${b.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
-              <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Candidatos UCASAL compatibles:</div>
-              ${(candidatosPorBusqueda[b.id]||[]).length>0
-                ? (candidatosPorBusqueda[b.id]||[]).map(c=>`
-                  <div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:8px;padding:8px 10px;margin-bottom:5px">
-                    <div class="avatar" style="width:30px;height:30px;font-size:11px;background:${c.color}22;border:1.5px solid ${c.color}55;color:${c.color}">${c.avatar}</div>
-                    <div style="flex:1"><div style="font-size:12px;font-weight:600">${c.nombre}</div><div style="font-size:10px;color:var(--muted)">${c.carrera} · Año ${c.año}</div></div>
-                    <div style="text-align:right"><div style="font-size:13px;font-weight:800;color:var(--lime)">${c.match}%</div><div style="font-size:9px;color:var(--muted)">match</div></div>
-                  </div>`).join('')
-                : `<div style="font-size:12px;color:var(--muted);padding:6px 0">Sin candidatos con match suficiente aún.</div>`}
-            </div>`).join('')}
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem">
-            <div class="card-title" style="margin-bottom:0">📋 Intención futura</div>
-            <button onclick="openInt()" style="background:transparent;border:1px solid rgba(167,139,250,0.4);color:#a78bfa;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Registrar</button>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
+                ${b.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+              </div>
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">
+                ${cands.length > 0 ? `${cands.length} candidato${cands.length>1?'s':''} UCASAL compatible${cands.length>1?'s':''}` : 'Sin candidatos con match suficiente aún'}
+              </div>
+              ${cands.map(c => `
+                <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:10px;padding:10px 14px;margin-bottom:7px;border:1px solid var(--border)">
+                  <div class="avatar" style="width:36px;height:36px;font-size:12px;background:${c.color}22;border:1.5px solid ${c.color}55;color:${c.color}">${c.avatar}</div>
+                  <div style="flex:1">
+                    <div style="font-size:13px;font-weight:600">${c.nombre}</div>
+                    <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.carrera} · Año ${c.año}</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:20px;font-weight:900;color:var(--lime);line-height:1">${c.match}%</div>
+                    <div style="font-size:9px;color:var(--muted)">match</div>
+                  </div>
+                </div>`).join('')}
+            </div>`;
+          }).join('')}
+      </div>
+
+      <!-- Intenciones futuras -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800">Intención futura</div>
+        <button onclick="openInt()" style="background:transparent;border:1px solid rgba(167,139,250,0.4);color:#a78bfa;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Registrar</button>
+      </div>
+      ${misIntenciones.length === 0 ? `
+        <div class="card" style="text-align:center;padding:1.5rem">
+          <div style="font-size:13px;color:var(--muted)">No hay intenciones futuras registradas. Registrá qué perfiles vas a necesitar para que UCASAL prepare candidatos con anticipación.</div>
+        </div>` 
+      : misIntenciones.map(i => `
+        <div class="emp-card" style="border-left-color:#a78bfa;margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <div>
+              <div style="font-weight:700;font-size:14px">${i.perfil}</div>
+              <div style="font-size:11px;color:var(--muted)">${i.trimestre}</div>
+            </div>
+            ${pill(i.estado, i.estado==='confirmada'?'#4ade80':'#f59e0b')}
           </div>
-          <div class="card" style="margin-bottom:0.9rem">
-            <div class="card-title">Proyección de demanda</div>
-            ${['Q3 2025','Q4 2025','Q1 2026','Q2 2026'].map(q=>{const tot=INTENCIONES.filter(i=>i.trimestre===q).reduce((a,i)=>a+i.cantidad,0);return`<div class="bar-row"><div style="font-size:11px;color:var(--muted);width:60px;flex-shrink:0">${q}</div>${bar(tot*15,'#a78bfa')}<div class="bar-pct" style="color:#a78bfa">${tot||'—'}</div></div>`;}).join('')}
-          </div>
-          <div id="intenciones-list">${renderIntenciones()}</div>
-        </div>
-      </div>`;
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px">${i.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+          <div style="font-size:13px;color:#a78bfa;font-weight:700">${i.cantidad} posición${i.cantidad>1?'es':''} proyectada${i.cantidad>1?'s':''}</div>
+        </div>`).join('')}
+    `;
   },
 };
 
