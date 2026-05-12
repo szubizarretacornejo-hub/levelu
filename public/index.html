@@ -1348,9 +1348,53 @@ async function finSim(){
 }
 
 // ═══════════════ NUEVA BÚSQUEDA ═══════════════
-function openNB(){nbForm={empresa:'',puesto:'',area:'',skills:'',urgencia:'media'};document.getElementById('modal-nb').style.display='flex';renderNB();}
-function renderNB(){document.getElementById('nb-content').innerHTML=`${[['Empresa','empresa','ej: Banco Macro'],['Puesto','puesto','ej: Analista Jr.'],['Área','area','ej: Finanzas'],['Habilidades','skills','ej: Excel, Python']].map(([l,k,ph])=>`<div class="form-row"><label class="form-label">${l}</label><input class="form-input" value="${nbForm[k]}" placeholder="${ph}" oninput="nbForm['${k}']=this.value"/></div>`).join('')}<div class="form-row"><label class="form-label">Urgencia</label><div style="display:flex;gap:7px">${['alta','media','baja'].map(u=>`<button onclick="nbForm.urgencia='${u}';renderNB()" style="flex:1;padding:8px;border-radius:9px;border:1px solid ${nbForm.urgencia===u?urgColor(u):'var(--border)'};background:${nbForm.urgencia===u?urgColor(u)+'18':'transparent'};color:${nbForm.urgencia===u?urgColor(u):'var(--muted)'};font-weight:600;font-size:12px;cursor:pointer;text-transform:capitalize;font-family:inherit">${u}</button>`).join('')}</div></div><div style="display:flex;gap:8px;margin-top:1.25rem"><button onclick="closeModal('modal-nb')" style="flex:1;background:transparent;border:1px solid var(--border2);border-radius:9px;padding:10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit">Cancelar</button><button onclick="guardarNB()" ${!(nbForm.empresa&&nbForm.puesto&&nbForm.area&&nbForm.skills)?'disabled':''} style="flex:2;background:var(--lime);border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;color:var(--lime-text);cursor:pointer;font-family:inherit">Publicar →</button></div>`;}
-function guardarNB(){BUSQUEDAS.unshift({id:Date.now(),empresa:nbForm.empresa,puesto:nbForm.puesto,area:nbForm.area,skills:nbForm.skills.split(',').map(s=>s.trim()).filter(Boolean),urgencia:nbForm.urgencia,candidatos:Math.floor(Math.random()*3),fecha:'ahora mismo'});closeModal('modal-nb');switchView('empresas');}
+function openNB(){nbForm={empresa:currentRol==='empresa'?currentEmpresa:'',puesto:'',area:'',skills:'',urgencia:'media'};document.getElementById('modal-nb').style.display='flex';renderNB();}
+function selUrgencia(u){nbForm.urgencia=u;renderNB();}
+function renderNB(){
+  if(currentRol==='empresa' && currentEmpresa) nbForm.empresa=currentEmpresa;
+  var esEmpresa=currentRol==='empresa';
+  var html='';
+  if(esEmpresa){
+    html+='<div style="background:rgba(200,245,74,0.08);border:1px solid rgba(200,245,74,0.2);border-radius:10px;padding:9px 13px;margin-bottom:1rem;font-size:12px;color:#c8f54a;font-weight:600">Publicando como: '+currentEmpresa+'</div>';
+  } else {
+    html+='<div class="form-row"><label class="form-label">Empresa</label><input class="form-input" value="'+nbForm.empresa+'" placeholder="ej: Pan American Energy" oninput="nbForm.empresa=this.value"/></div>';
+  }
+  html+='<div class="form-row"><label class="form-label">Puesto</label><input class="form-input" value="'+nbForm.puesto+'" placeholder="ej: Analista Jr." oninput="nbForm.puesto=this.value"/></div>';
+  html+='<div class="form-row"><label class="form-label">Área</label><input class="form-input" value="'+nbForm.area+'" placeholder="ej: Finanzas" oninput="nbForm.area=this.value"/></div>';
+  html+='<div class="form-row"><label class="form-label">Habilidades</label><input class="form-input" value="'+nbForm.skills+'" placeholder="ej: Excel, Python, Inglés" oninput="nbForm.skills=this.value"/></div>';
+  html+='<div class="form-row"><label class="form-label">Urgencia</label><div style="display:flex;gap:7px">';
+  var urgs=['alta','media','baja'];
+  for(var i=0;i<urgs.length;i++){
+    var u=urgs[i];
+    var sel=nbForm.urgencia===u;
+    var bc=sel?urgColor(u):'var(--border)';
+    var bg=sel?urgColor(u)+'18':'transparent';
+    var co=sel?urgColor(u):'var(--muted)';
+    html+='<button onclick="selUrgencia(this.getAttribute(\'data-u\'))" data-u="'+u+'" style="flex:1;padding:8px;border-radius:9px;border:1px solid '+bc+';background:'+bg+';color:'+co+';font-weight:600;font-size:12px;cursor:pointer;text-transform:capitalize;font-family:inherit">'+u+'</button>';
+  }
+  html+='</div></div>';
+  var ok=(esEmpresa||nbForm.empresa)&&nbForm.puesto&&nbForm.area&&nbForm.skills;
+  html+='<div style="display:flex;gap:8px;margin-top:1.25rem">';
+  html+='<button onclick="closeModal(\'modal-nb\')" style="flex:1;background:transparent;border:1px solid var(--border2);border-radius:9px;padding:10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit">Cancelar</button>';
+  html+='<button onclick="guardarNB()" '+(ok?'':'disabled')+' style="flex:2;background:var(--lime);border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;color:var(--lime-text);cursor:pointer;font-family:inherit">Publicar →</button>';
+  html+='</div>';
+  document.getElementById('nb-content').innerHTML=html;
+}
+function guardarNB(){
+  const empresaNombre = currentRol==='empresa' && currentEmpresa ? currentEmpresa : nbForm.empresa;
+  BUSQUEDAS.unshift({
+    id:Date.now(),
+    empresa:empresaNombre,
+    puesto:nbForm.puesto,
+    area:nbForm.area,
+    skills:nbForm.skills.split(',').map(s=>s.trim()).filter(Boolean),
+    urgencia:nbForm.urgencia,
+    candidatos:0,
+    fecha:'ahora mismo'
+  });
+  closeModal('modal-nb');
+  switchView('empresas');
+}
 
 // ═══════════════ INTENCIÓN ═══════════════
 function openInt(){intForm={empresa:'',perfil:'',cantidad:'',trimestre:'Q3 2025',skills:''};document.getElementById('modal-int').style.display='flex';renderInt();}
