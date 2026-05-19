@@ -1060,30 +1060,53 @@ const VIEWS={
 
   asistente:(el)=>{
     chatHistory=[];
-    const brechasTexto=Object.entries(profile.skills).filter(([,v])=>v<2).map(([k])=>SKILLS.find(s=>s.id===k)?.label||k).join(', ');
-    const welcome=`Hola ${profile.nombre} 👋 Ya tengo acceso a tu perfil completo.\n\nSos de ${profile.carrera}, ${profile.año}° año, con interés en ${profile.area||'tu área'} y aspirás a ser ${profile.aspiracion||'desarrollarte profesionalmente'}.\n\n${brechasTexto?`Detecté brechas en: ${brechasTexto}. Las voy a tener en cuenta en cada respuesta.\n\n`:''}Puedo buscar en internet información actualizada del mercado. ¿Por dónde empezamos?`;
-    const suggs=[`¿Qué me falta para trabajar en ${profile.area||'mi área'}?`,`¿Cómo está el mercado para ${profile.aspiracion||'mi carrera'}?`,...(PERSONAS_SUGG[profile.año]||PERSONAS_SUGG[4])].slice(0,5);
-    el.innerHTML=`
-      <div class="view-header"><div><div class="view-title">Asistente IA</div><div class="view-sub">Respuestas personalizadas · búsqueda web en tiempo real</div></div><div style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:99px;padding:5px 12px;font-size:11px;color:var(--green);font-weight:600"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite"></div>Web search activo</div></div>
-      <div class="chat-layout">
-        <div class="chat-left">
-          <div class="chat-ctx"><b>Perfil activo:</b> ${profile.nombre} · ${profile.carrera} · ${profile.año}° año · Área: ${profile.area} · Aspiración: ${profile.aspiracion}</div>
-          <div class="chat-messages" id="chat-msgs"></div>
-          <div class="chat-input-area">
-            <div class="chat-sugg" id="chat-sugg">${suggs.map(s=>`<button class="sugg-chip" onclick="useSugg(this)">${s}</button>`).join('')}</div>
-            <div class="chat-form">
-              <input class="chat-input" id="chat-inp" placeholder="Preguntale algo al asistente..." onkeydown="if(event.key==='Enter'&&!chatLoading)sendChat()"/>
-              <button class="chat-send" id="chat-send" onclick="sendChat()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c0c0c" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-            </div>
-          </div>
-        </div>
-        <div class="chat-right">
-          <div class="chat-right-title">Búsquedas activas</div>
-          ${misBusquedas.map(b=>`<div class="puesto-item"><div class="puesto-item-name">${b.puesto}</div><div class="puesto-item-emp">${b.empresa} · ${b.area}</div><div style="font-size:10px;font-weight:700;color:${urgColor(b.urgencia)};margin-top:3px">Urgencia ${b.urgencia}</div></div>`).join('')}
-        </div>
-      </div>`;
+    var brechasTexto=Object.entries(profile.skills).filter(function(e){return e[1]<2;}).map(function(e){var s=SKILLS.find(function(sk){return sk.id===e[0];});return s?s.label:e[0];}).join(', ');
+    var welcome='Hola '+profile.nombre+' 👋 Ya tengo acceso a tu perfil completo.\n\n';
+    welcome+='Sos de '+profile.carrera+', '+profile.año+'° año, con interés en '+(profile.area||'tu área')+' y aspirás a ser '+(profile.aspiracion||'desarrollarte profesionalmente')+'.\n\n';
+    if(brechasTexto) welcome+='Detecté brechas en: '+brechasTexto+'. Las voy a tener en cuenta en cada respuesta.\n\n';
+    welcome+='Puedo buscar en internet información actualizada del mercado. ¿Por dónde empezamos?';
+
+    var suggs=[
+      '¿Qué me falta para trabajar en '+(profile.area||'mi área')+'?',
+      '¿Cómo está el mercado para '+(profile.aspiracion||'mi carrera')+'?'
+    ].concat(PERSONAS_SUGG[profile.año]||PERSONAS_SUGG[4]).slice(0,5);
+
+    var html='';
+    // Header
+    html+='<div class="view-header">';
+    html+='<div><div class="view-title">Asistente IA</div><div class="view-sub">Respuestas personalizadas · búsqueda web en tiempo real</div></div>';
+    html+='<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:99px;padding:5px 12px;font-size:11px;color:var(--green);font-weight:600">';
+    html+='<div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite"></div>Web search activo</div>';
+    html+='</div>';
+    // Chat layout
+    html+='<div class="chat-layout">';
+    html+='<div class="chat-left">';
+    html+='<div class="chat-ctx"><b>Perfil activo:</b> '+profile.nombre+' · '+profile.carrera+' · '+profile.año+'° año · Área: '+profile.area+' · Aspiración: '+profile.aspiracion+'</div>';
+    html+='<div class="chat-messages" id="chat-msgs"></div>';
+    html+='<div class="chat-input-area">';
+    html+='<div class="chat-sugg" id="chat-sugg">';
+    for(var si=0;si<suggs.length;si++){
+      html+='<button class="sugg-chip" onclick="useSugg(this)">'+suggs[si]+'</button>';
+    }
+    html+='</div>';
+    html+='<div class="chat-form">';
+    html+='<input class="chat-input" id="chat-inp" placeholder="Preguntale algo al asistente..." onkeydown="if(event.key===\'Enter\'&&!chatLoading)sendChat()"/>';
+    html+='<button class="chat-send" id="chat-send" onclick="sendChat()">';
+    html+='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c0c0c" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+    html+='</button></div></div></div>';
+    // Right panel - busquedas
+    html+='<div class="chat-right"><div class="chat-right-title">Búsquedas activas</div>';
+    for(var bi=0;bi<BUSQUEDAS.length;bi++){
+      var b=BUSQUEDAS[bi];
+      html+='<div class="puesto-item"><div class="puesto-item-name">'+b.puesto+'</div>';
+      html+='<div class="puesto-item-emp">'+b.empresa+' · '+b.area+'</div>';
+      html+='<div style="font-size:10px;font-weight:700;color:'+urgColor(b.urgencia)+';margin-top:3px">Urgencia '+b.urgencia+'</div></div>';
+    }
+    html+='</div></div>';
+    el.innerHTML=html;
     addChatBubble('ai',welcome);
   },
+
 
   mercado:(el)=>{
     const rel=TENDENCIAS.filter(t=>t.carreras.includes(profile.carrera));
