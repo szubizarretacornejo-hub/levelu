@@ -192,7 +192,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
    APP SHELL
 ══════════════════════════════════════════════ */
 .app-shell{display:flex;flex:1;overflow:hidden;height:100vh;}
-.sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+.sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;z-index:10;}
 .sidebar-brand{padding:1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
 .sidebar-wordmark{font-family:'Syne',sans-serif;font-size:17px;font-weight:900;letter-spacing:-0.04em;}
 .sidebar-wordmark span{color:var(--lime);}
@@ -447,7 +447,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
         <div class="user-chip">
           <div class="avatar" id="sb-avatar" style="font-size:12px"></div>
           <div><div class="user-name" id="sb-name"></div><div class="user-role" id="sb-role"></div></div>
-          <button class="logout-btn" onclick="doLogout()" title="Cerrar sesión">⏏</button>
+          <button class="logout-btn" onclick="doLogout()" title="Cerrar sesión" style="cursor:pointer">⏏</button>
         </div>
       </div>
     </aside>
@@ -939,11 +939,9 @@ function buildSidebarEmpresa(){
   document.getElementById('sb-role').textContent = 'Panel empresa';
 
   const items = [
-    {section:'Mi empresa'},
+    {section:'MI EMPRESA'},
     {id:'empresas', label:'Búsquedas activas', ico:'🔍'},
     {id:'emp-intencion', label:'Intención futura', ico:'📋'},
-    {section:''},
-    {id:'landing', label:'Cerrar sesión', ico:'⏏'},
   ];
   document.getElementById('sidebar-nav').innerHTML = items.map(item=>{
     if(item.section!==undefined) return item.section ? `<div class="sidebar-section">${item.section}</div>` : '<div style="margin-top:6px"></div>';
@@ -1381,13 +1379,14 @@ function renderNB(){
   document.getElementById('nb-content').innerHTML=html;
 }
 function guardarNB(){
-  const empresaNombre = currentRol==='empresa' && currentEmpresa ? currentEmpresa : nbForm.empresa;
+  var empresaNombre = currentRol==='empresa' && currentEmpresa ? currentEmpresa : nbForm.empresa;
+  if(!empresaNombre || !nbForm.puesto || !nbForm.area || !nbForm.skills){ return; }
   BUSQUEDAS.unshift({
     id:Date.now(),
     empresa:empresaNombre,
     puesto:nbForm.puesto,
     area:nbForm.area,
-    skills:nbForm.skills.split(',').map(s=>s.trim()).filter(Boolean),
+    skills:nbForm.skills.split(',').map(function(s){return s.trim();}).filter(Boolean),
     urgencia:nbForm.urgencia,
     candidatos:0,
     fecha:'ahora mismo'
@@ -1395,6 +1394,8 @@ function guardarNB(){
   closeModal('modal-nb');
   switchView('empresas');
 }
+
+
 
 // ═══════════════ INTENCIÓN ═══════════════
 function openInt(){intForm={empresa:'',perfil:'',cantidad:'',trimestre:'Q3 2025',skills:''};document.getElementById('modal-int').style.display='flex';renderInt();}
